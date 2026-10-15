@@ -1,0 +1,140 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "1052ce06",
+      "type": "TestPattern",
+      "pos": [
+        0,
+        0
+      ],
+      "values": {
+        "width": 640,
+        "height": 480,
+        "animate": true,
+        "motion": "salınım"
+      }
+    },
+    {
+      "id": "81ad7dec",
+      "type": "ColorRange",
+      "pos": [
+        240,
+        0
+      ],
+      "values": {
+        "h_min": 0,
+        "h_max": 179,
+        "s_min": 150,
+        "s_max": 255,
+        "v_min": 100,
+        "v_max": 255
+      }
+    },
+    {
+      "id": "102592bc",
+      "type": "FindContours",
+      "pos": [
+        480,
+        0
+      ],
+      "values": {
+        "min_area": 500,
+        "max_area": 0
+      }
+    },
+    {
+      "id": "5a361d37",
+      "type": "QuickClassifier",
+      "pos": [
+        720,
+        0
+      ],
+      "values": {
+        "folder": "examples/ornek_veri/sekiller",
+        "k": 3,
+        "min_score": 0.0,
+        "pad": 10
+      }
+    },
+    {
+      "id": "179857fd",
+      "type": "DrawDetections",
+      "pos": [
+        960,
+        0
+      ],
+      "values": {
+        "show_score": true,
+        "thickness": 2
+      }
+    },
+    {
+      "id": "6474f1b9",
+      "type": "Preview",
+      "pos": [
+        1200,
+        0
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "a674ebc9",
+      "type": "Note",
+      "pos": [
+        480,
+        300
+      ],
+      "values": {
+        "text": "Hızlı sınıflandırıcı her şekli\n\"top\" ya da \"kutu\" diye ayırır.\nÖrnekler: examples/ornek_veri/sekiller"
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "1052ce06",
+      "src_port": "image",
+      "dst": "81ad7dec",
+      "dst_port": "image"
+    },
+    {
+      "src": "81ad7dec",
+      "src_port": "mask",
+      "dst": "102592bc",
+      "dst_port": "mask"
+    },
+    {
+      "src": "1052ce06",
+      "src_port": "image",
+      "dst": "5a361d37",
+      "dst_port": "image"
+    },
+    {
+      "src": "102592bc",
+      "src_port": "detections",
+      "dst": "5a361d37",
+      "dst_port": "detections"
+    },
+    {
+      "src": "1052ce06",
+      "src_port": "image",
+      "dst": "179857fd",
+      "dst_port": "image"
+    },
+    {
+      "src": "5a361d37",
+      "src_port": "detections",
+      "dst": "179857fd",
+      "dst_port": "detections"
+    },
+    {
+      "src": "179857fd",
+      "src_port": "image",
+      "dst": "6474f1b9",
+      "dst_port": "image"
+    }
+  ]
+}

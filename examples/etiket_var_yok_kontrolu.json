@@ -1,0 +1,206 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "kaynak",
+      "type": "ImageFolder",
+      "pos": [
+        0.0,
+        0.0
+      ],
+      "values": {
+        "folder": "examples/ornek_veri/sablonlar/etiket",
+        "loop": true,
+        "delay": 0.6,
+        "recursive": false
+      }
+    },
+    {
+      "id": "etiket",
+      "type": "LabelPresence",
+      "pos": [
+        280.0,
+        0.0
+      ],
+      "values": {
+        "roi": "90,70,300,220",
+        "method": "açık renkli etiket",
+        "threshold": 215,
+        "h_min": 35,
+        "h_max": 85,
+        "s_min": 60,
+        "s_max": 255,
+        "v_min": 40,
+        "v_max": 255,
+        "reference": "",
+        "min_score": 0.6,
+        "search_angle": 10.0,
+        "min_area_pct": 5.0,
+        "expected_x": -1.0,
+        "expected_y": -1.0,
+        "max_offset": 20.0,
+        "max_angle": 5.0
+      }
+    },
+    {
+      "id": "onizleme",
+      "type": "Preview",
+      "pos": [
+        600.0,
+        -120.0
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "karar",
+      "type": "ShowValue",
+      "pos": [
+        600.0,
+        60.0
+      ],
+      "values": {
+        "prefix": "Etiket tamam: ",
+        "log": false
+      }
+    },
+    {
+      "id": "sayac",
+      "type": "ToleranceCheck",
+      "pos": [
+        600.0,
+        200.0
+      ],
+      "values": {
+        "low": 0.5,
+        "high": 1.5,
+        "nominal": 1.0,
+        "missing": "hatalı say"
+      }
+    },
+    {
+      "id": "plc",
+      "type": "ModbusWrite",
+      "pos": [
+        900.0,
+        60.0
+      ],
+      "values": {
+        "host": "192.168.0.10",
+        "port": 502,
+        "unit": 1,
+        "kind": "coil",
+        "address": 0
+      },
+      "disabled": true
+    }
+  ],
+  "connections": [
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "etiket",
+      "dst_port": "image"
+    },
+    {
+      "src": "etiket",
+      "src_port": "image",
+      "dst": "onizleme",
+      "dst_port": "image"
+    },
+    {
+      "src": "etiket",
+      "src_port": "ok",
+      "dst": "karar",
+      "dst_port": "value"
+    },
+    {
+      "src": "etiket",
+      "src_port": "ok",
+      "dst": "sayac",
+      "dst_port": "value"
+    },
+    {
+      "src": "etiket",
+      "src_port": "ok",
+      "dst": "plc",
+      "dst_port": "value"
+    }
+  ],
+  "template": {
+    "title": "Etiket var/yok kontrolü",
+    "categories": [
+      "Kalite kontrol",
+      "PLC"
+    ],
+    "description": "Kutunun üstünde etiket var mı, yerinde mi, eğik mi bakar; sağlam/hatalı sayar ve isterseniz sonucu PLC'ye yazar.",
+    "questions": [
+      {
+        "id": "kaynak",
+        "label": "Görüntü kaynağı",
+        "kind": "source",
+        "default": "Örnek resimler",
+        "help": "Önce örnek resimlerle deneyin; sonra kameranızı seçin.",
+        "targets": [
+          {
+            "node": "kaynak"
+          }
+        ]
+      },
+      {
+        "id": "kayma",
+        "label": "En çok kayma (piksel)",
+        "kind": "float",
+        "default": 20,
+        "min": 0,
+        "max": 1000,
+        "targets": [
+          {
+            "node": "etiket",
+            "param": "max_offset"
+          }
+        ]
+      },
+      {
+        "id": "aci",
+        "label": "En çok eğiklik (°)",
+        "kind": "float",
+        "default": 5,
+        "min": 0,
+        "max": 90,
+        "targets": [
+          {
+            "node": "etiket",
+            "param": "max_angle"
+          }
+        ]
+      },
+      {
+        "id": "plc",
+        "label": "Sonucu PLC'ye yaz (Modbus TCP)",
+        "kind": "bool",
+        "default": false,
+        "targets": [
+          {
+            "node": "plc",
+            "enabled": true
+          }
+        ]
+      },
+      {
+        "id": "plc_ip",
+        "label": "PLC IP adresi",
+        "kind": "str",
+        "default": "192.168.0.10",
+        "targets": [
+          {
+            "node": "plc",
+            "param": "host"
+          }
+        ]
+      }
+    ]
+  }
+}

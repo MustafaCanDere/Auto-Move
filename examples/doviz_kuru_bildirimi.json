@@ -1,0 +1,94 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "33d69099",
+      "type": "Scheduler",
+      "pos": [
+        0.0,
+        75.0
+      ],
+      "values": {
+        "times": "09:00, 15:00",
+        "days": "hafta içi"
+      }
+    },
+    {
+      "id": "57f774f0",
+      "type": "ApiGet",
+      "pos": [
+        260.0,
+        75.0
+      ],
+      "values": {
+        "url": "https://api.frankfurter.app/latest?from=USD&to=TRY",
+        "path": "rates.TRY",
+        "header": "",
+        "interval": 0.0
+      }
+    },
+    {
+      "id": "4feedc0f",
+      "type": "ChatWebhook",
+      "pos": [
+        520.0,
+        0.0
+      ],
+      "values": {
+        "url": "",
+        "text": "💵 Dolar kuru: {v} TL",
+        "cooldown": 0
+      }
+    },
+    {
+      "id": "0ad8b746",
+      "type": "ShowValue",
+      "pos": [
+        520.0,
+        150.0
+      ],
+      "values": {
+        "prefix": "USD/TRY: ",
+        "log": false
+      }
+    },
+    {
+      "id": "893d2bd1",
+      "type": "Note",
+      "pos": [
+        0,
+        300
+      ],
+      "values": {
+        "text": "Döviz kuru bildirimi: hafta içi 09:00 ve 15:00'te dolar kurunu ücretsiz bir API'den alır, Discord/Slack/Teams kanalına yazar. 'Discord / Slack / Teams Gönder' bloğuna kanalın webhook adresini yapıştırın. Alan yolunu 'rates.EUR' yaparak başka kur da alabilirsiniz (adreste to=EUR)."
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "33d69099",
+      "src_port": "tick",
+      "dst": "57f774f0",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "57f774f0",
+      "src_port": "done",
+      "dst": "4feedc0f",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "57f774f0",
+      "src_port": "number",
+      "dst": "4feedc0f",
+      "dst_port": "value"
+    },
+    {
+      "src": "57f774f0",
+      "src_port": "number",
+      "dst": "0ad8b746",
+      "dst_port": "value"
+    }
+  ]
+}

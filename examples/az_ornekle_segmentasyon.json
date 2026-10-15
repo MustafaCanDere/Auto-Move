@@ -1,0 +1,92 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "src",
+      "type": "ImageFile",
+      "pos": [
+        0,
+        0
+      ],
+      "values": {
+        "path": "examples/ornek_veri/az_ornek/test.jpg"
+      }
+    },
+    {
+      "id": "seg",
+      "type": "FewShotSegment",
+      "pos": [
+        260,
+        0
+      ],
+      "values": {
+        "model": "examples/ornek_veri/az_ornek/parca_modeli.vfseg",
+        "target": "parça",
+        "min_area": 50,
+        "smooth": 1
+      }
+    },
+    {
+      "id": "prev",
+      "type": "Preview",
+      "pos": [
+        540,
+        -60
+      ],
+      "values": {
+        "overlay": "Parçalar (yeşil)"
+      }
+    },
+    {
+      "id": "cnt",
+      "type": "ShowValue",
+      "pos": [
+        540,
+        80
+      ],
+      "values": {
+        "prefix": "Parça sayısı: ",
+        "log": false
+      }
+    },
+    {
+      "id": "area",
+      "type": "ShowValue",
+      "pos": [
+        540,
+        200
+      ],
+      "values": {
+        "prefix": "Parça alanı %: ",
+        "log": false
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "src",
+      "src_port": "image",
+      "dst": "seg",
+      "dst_port": "image"
+    },
+    {
+      "src": "seg",
+      "src_port": "overlay",
+      "dst": "prev",
+      "dst_port": "image"
+    },
+    {
+      "src": "seg",
+      "src_port": "count",
+      "dst": "cnt",
+      "dst_port": "value"
+    },
+    {
+      "src": "seg",
+      "src_port": "area",
+      "dst": "area",
+      "dst_port": "value"
+    }
+  ]
+}

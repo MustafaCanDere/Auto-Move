@@ -1,0 +1,130 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "src",
+      "type": "ImageFile",
+      "pos": [
+        0,
+        0
+      ],
+      "values": {
+        "path": "examples/ornek_veri/az_ornek_tespit/test.jpg"
+      }
+    },
+    {
+      "id": "det",
+      "type": "FewShotDetect",
+      "pos": [
+        260,
+        0
+      ],
+      "values": {
+        "model": "examples/ornek_veri/az_ornek_tespit/nesne_modeli.vfdet",
+        "score": 0.5,
+        "max_objects": 50,
+        "classes": ""
+      }
+    },
+    {
+      "id": "draw",
+      "type": "DrawDetections",
+      "pos": [
+        540,
+        -120
+      ],
+      "values": {}
+    },
+    {
+      "id": "prev",
+      "type": "Preview",
+      "pos": [
+        800,
+        -120
+      ],
+      "values": {
+        "overlay": "Bulunan parçalar"
+      }
+    },
+    {
+      "id": "cnt",
+      "type": "ShowValue",
+      "pos": [
+        540,
+        60
+      ],
+      "values": {
+        "prefix": "Parça sayısı: ",
+        "log": false
+      }
+    },
+    {
+      "id": "bycls",
+      "type": "CountByLabel",
+      "pos": [
+        540,
+        180
+      ],
+      "values": {
+        "labels": "braket,etiket"
+      }
+    },
+    {
+      "id": "sum",
+      "type": "ShowValue",
+      "pos": [
+        800,
+        180
+      ],
+      "values": {
+        "prefix": "Sınıflar: ",
+        "log": false
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "src",
+      "src_port": "image",
+      "dst": "det",
+      "dst_port": "image"
+    },
+    {
+      "src": "src",
+      "src_port": "image",
+      "dst": "draw",
+      "dst_port": "image"
+    },
+    {
+      "src": "det",
+      "src_port": "detections",
+      "dst": "draw",
+      "dst_port": "detections"
+    },
+    {
+      "src": "draw",
+      "src_port": "image",
+      "dst": "prev",
+      "dst_port": "image"
+    },
+    {
+      "src": "det",
+      "src_port": "count",
+      "dst": "cnt",
+      "dst_port": "value"
+    },
+    {
+      "src": "det",
+      "src_port": "detections",
+      "dst": "bycls",
+      "dst_port": "detections"
+    },
+    {
+      "src": "bycls",
+      "src_port": "summary",
+      "dst": "sum",
+      "dst_port": "value"
+    }
+  ]
+}

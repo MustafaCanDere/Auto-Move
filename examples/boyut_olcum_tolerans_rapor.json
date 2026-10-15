@@ -1,0 +1,320 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "kaynak",
+      "type": "ImageFolder",
+      "pos": [
+        0.0,
+        0.0
+      ],
+      "values": {
+        "folder": "examples/ornek_veri/sablonlar/olcum",
+        "loop": true,
+        "delay": 0.6,
+        "recursive": false
+      }
+    },
+    {
+      "id": "esik",
+      "type": "Threshold",
+      "pos": [
+        260.0,
+        0.0
+      ],
+      "values": {
+        "mode": "otsu",
+        "value": 127
+      }
+    },
+    {
+      "id": "kontur",
+      "type": "FindContours",
+      "pos": [
+        500.0,
+        0.0
+      ],
+      "values": {
+        "min_area": 1000,
+        "max_area": 0
+      }
+    },
+    {
+      "id": "olc",
+      "type": "MeasureObjects",
+      "pos": [
+        740.0,
+        0.0
+      ],
+      "values": {
+        "px_per_mm": 4.0
+      }
+    },
+    {
+      "id": "tolerans",
+      "type": "ToleranceCheck",
+      "pos": [
+        980.0,
+        0.0
+      ],
+      "values": {
+        "low": 49.5,
+        "high": 50.5,
+        "nominal": 50.0,
+        "missing": "hatalı say"
+      }
+    },
+    {
+      "id": "onizleme",
+      "type": "Preview",
+      "pos": [
+        980.0,
+        -200.0
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "csv",
+      "type": "CsvLogger",
+      "pos": [
+        1240.0,
+        60.0
+      ],
+      "values": {
+        "path": "olcumler.csv",
+        "every_n": 1
+      }
+    },
+    {
+      "id": "rapor",
+      "type": "ShiftReport",
+      "pos": [
+        1240.0,
+        -120.0
+      ],
+      "values": {
+        "times": "08:00, 16:00, 00:00",
+        "title": "Boyut ölçüm raporu",
+        "extra_name": "Son ölçüm (mm)"
+      }
+    },
+    {
+      "id": "goster",
+      "type": "ShowValue",
+      "pos": [
+        1500.0,
+        -120.0
+      ],
+      "values": {
+        "prefix": "",
+        "log": false
+      }
+    },
+    {
+      "id": "sonuc",
+      "type": "TextFormat",
+      "pos": [
+        1240.0,
+        220.0
+      ],
+      "values": {
+        "template": "{a} mm → {b} (verim %{c})"
+      }
+    },
+    {
+      "id": "sonuc_goster",
+      "type": "ShowValue",
+      "pos": [
+        1500.0,
+        220.0
+      ],
+      "values": {
+        "prefix": "",
+        "log": false
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "esik",
+      "dst_port": "image"
+    },
+    {
+      "src": "esik",
+      "src_port": "image",
+      "dst": "kontur",
+      "dst_port": "mask"
+    },
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "olc",
+      "dst_port": "image"
+    },
+    {
+      "src": "kontur",
+      "src_port": "contours",
+      "dst": "olc",
+      "dst_port": "contours"
+    },
+    {
+      "src": "olc",
+      "src_port": "image",
+      "dst": "onizleme",
+      "dst_port": "image"
+    },
+    {
+      "src": "olc",
+      "src_port": "width",
+      "dst": "tolerans",
+      "dst_port": "value"
+    },
+    {
+      "src": "olc",
+      "src_port": "width",
+      "dst": "csv",
+      "dst_port": "a"
+    },
+    {
+      "src": "tolerans",
+      "src_port": "text",
+      "dst": "csv",
+      "dst_port": "b"
+    },
+    {
+      "src": "tolerans",
+      "src_port": "ok_count",
+      "dst": "rapor",
+      "dst_port": "ok"
+    },
+    {
+      "src": "tolerans",
+      "src_port": "nok_count",
+      "dst": "rapor",
+      "dst_port": "nok"
+    },
+    {
+      "src": "olc",
+      "src_port": "width",
+      "dst": "rapor",
+      "dst_port": "extra"
+    },
+    {
+      "src": "rapor",
+      "src_port": "text",
+      "dst": "goster",
+      "dst_port": "value"
+    },
+    {
+      "src": "olc",
+      "src_port": "width",
+      "dst": "sonuc",
+      "dst_port": "a"
+    },
+    {
+      "src": "tolerans",
+      "src_port": "text",
+      "dst": "sonuc",
+      "dst_port": "b"
+    },
+    {
+      "src": "tolerans",
+      "src_port": "yield",
+      "dst": "sonuc",
+      "dst_port": "c"
+    },
+    {
+      "src": "sonuc",
+      "src_port": "text",
+      "dst": "sonuc_goster",
+      "dst_port": "value"
+    }
+  ],
+  "template": {
+    "title": "Boyut ölçüm + tolerans + rapor",
+    "categories": [
+      "Ölçüm",
+      "Kalite kontrol"
+    ],
+    "description": "Parçanın boyunu milimetre olarak ölçer, nominal ± tolerans içinde mi bakar, her ölçümü CSV dosyasına yazar ve vardiya sonunda sağlam/hatalı raporu hazırlar.",
+    "questions": [
+      {
+        "id": "kaynak",
+        "label": "Görüntü kaynağı",
+        "kind": "source",
+        "default": "Örnek resimler",
+        "help": "Önce örnek resimlerle deneyin; sonra kameranızı seçin.",
+        "targets": [
+          {
+            "node": "kaynak"
+          }
+        ]
+      },
+      {
+        "id": "nominal",
+        "label": "Nominal boy (mm)",
+        "kind": "float",
+        "default": 50,
+        "min": 0,
+        "max": 100000,
+        "targets": [
+          {
+            "node": "tolerans",
+            "param": "nominal"
+          }
+        ]
+      },
+      {
+        "id": "tol",
+        "label": "Tolerans ± (mm)",
+        "kind": "float",
+        "default": 0.5,
+        "min": 0,
+        "max": 10000,
+        "targets": [
+          {
+            "node": "tolerans",
+            "param": "low",
+            "expr": "nominal - tol"
+          },
+          {
+            "node": "tolerans",
+            "param": "high",
+            "expr": "nominal + tol"
+          }
+        ]
+      },
+      {
+        "id": "ppm",
+        "label": "mm başına piksel (Ölçek Bul ile bulunur)",
+        "kind": "float",
+        "default": 4,
+        "min": 0.001,
+        "max": 10000,
+        "targets": [
+          {
+            "node": "olc",
+            "param": "px_per_mm"
+          }
+        ]
+      },
+      {
+        "id": "csv",
+        "label": "Ölçüm kayıt dosyası (CSV)",
+        "kind": "str",
+        "default": "olcumler.csv",
+        "targets": [
+          {
+            "node": "csv",
+            "param": "path"
+          }
+        ]
+      }
+    ]
+  }
+}

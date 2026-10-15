@@ -1,0 +1,159 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "66030a96",
+      "type": "Camera",
+      "pos": [
+        0,
+        0
+      ],
+      "values": {
+        "source": "0",
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "id": "48feede6",
+      "type": "YoloDetector",
+      "pos": [
+        260,
+        0
+      ],
+      "values": {
+        "model": "models/yolov8n.onnx",
+        "conf": 0.4,
+        "iou": 0.45,
+        "size": 640,
+        "classes": ""
+      }
+    },
+    {
+      "id": "b0c55551",
+      "type": "FilterDetections",
+      "pos": [
+        500,
+        0
+      ],
+      "values": {
+        "labels": "person",
+        "min_score": 0.0,
+        "zone": ""
+      }
+    },
+    {
+      "id": "613f3cde",
+      "type": "DrawDetections",
+      "pos": [
+        740,
+        0
+      ],
+      "values": {
+        "show_score": true,
+        "thickness": 2
+      }
+    },
+    {
+      "id": "280d8129",
+      "type": "Preview",
+      "pos": [
+        980,
+        0
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "c2a45487",
+      "type": "EdgeCounter",
+      "pos": [
+        740,
+        300
+      ],
+      "values": {}
+    },
+    {
+      "id": "0a3b5d50",
+      "type": "ShowValue",
+      "pos": [
+        980,
+        380
+      ],
+      "values": {
+        "prefix": "Giren kisi: ",
+        "log": false
+      }
+    },
+    {
+      "id": "ef825adc",
+      "type": "Webhook",
+      "pos": [
+        980,
+        300
+      ],
+      "values": {
+        "url": "",
+        "message": "Kisi algilandi"
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "66030a96",
+      "src_port": "image",
+      "dst": "48feede6",
+      "dst_port": "image"
+    },
+    {
+      "src": "48feede6",
+      "src_port": "detections",
+      "dst": "b0c55551",
+      "dst_port": "detections"
+    },
+    {
+      "src": "66030a96",
+      "src_port": "image",
+      "dst": "613f3cde",
+      "dst_port": "image"
+    },
+    {
+      "src": "b0c55551",
+      "src_port": "detections",
+      "dst": "613f3cde",
+      "dst_port": "detections"
+    },
+    {
+      "src": "613f3cde",
+      "src_port": "image",
+      "dst": "280d8129",
+      "dst_port": "image"
+    },
+    {
+      "src": "b0c55551",
+      "src_port": "any",
+      "dst": "c2a45487",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "c2a45487",
+      "src_port": "count",
+      "dst": "0a3b5d50",
+      "dst_port": "value"
+    },
+    {
+      "src": "b0c55551",
+      "src_port": "any",
+      "dst": "ef825adc",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "b0c55551",
+      "src_port": "count",
+      "dst": "ef825adc",
+      "dst_port": "value"
+    }
+  ]
+}

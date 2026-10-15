@@ -1,0 +1,217 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "6db39061",
+      "type": "IntervalTimer",
+      "pos": [
+        0.0,
+        0.0
+      ],
+      "values": {
+        "seconds": 86400,
+        "at_start": true
+      }
+    },
+    {
+      "id": "586d24a7",
+      "type": "TextConst",
+      "pos": [
+        0.0,
+        150.0
+      ],
+      "values": {
+        "text": "Bu haftanın en önemli yapay zeka haberleri"
+      }
+    },
+    {
+      "id": "3a69570f",
+      "type": "WebResearch",
+      "pos": [
+        260.0,
+        75.0
+      ],
+      "values": {
+        "searches": 5,
+        "detailed": false,
+        "to_memory": true
+      }
+    },
+    {
+      "id": "c525b00b",
+      "type": "AskAI",
+      "pos": [
+        520.0,
+        0.0
+      ],
+      "values": {
+        "template": "Aşağıdaki araştırmadan 45-60 saniyelik, sade ve akıcı Türkçe bir video anlatım metni yaz. Sadece seslendirilecek metni yaz: başlık, emoji, madde işareti kullanma. Kısa cümleler kur.\n\n{prompt}",
+        "system": "",
+        "use_memory": false,
+        "chat_memory": false,
+        "session": "genel",
+        "effort": "medium",
+        "max_tokens": 3000
+      }
+    },
+    {
+      "id": "2cd0b896",
+      "type": "TextToSpeech",
+      "pos": [
+        780.0,
+        75.0
+      ],
+      "values": {
+        "engine": "edge (ücretsiz, internet)",
+        "voice": "tr-TR-EmelNeural",
+        "rate": 0,
+        "folder": "sesler"
+      }
+    },
+    {
+      "id": "d59d480b",
+      "type": "MakeVideo",
+      "pos": [
+        1040.0,
+        75.0
+      ],
+      "values": {
+        "images": "",
+        "size": "yatay 1920x1080 (YouTube)",
+        "subtitles": true,
+        "folder": "videolar"
+      }
+    },
+    {
+      "id": "b4ff8d0f",
+      "type": "YouTubeUpload",
+      "pos": [
+        1300.0,
+        0.0
+      ],
+      "values": {
+        "privacy": "private",
+        "tags": "yapay zeka,haber",
+        "client_secret": ""
+      },
+      "disabled": true
+    },
+    {
+      "id": "a651a343",
+      "type": "SaveText",
+      "pos": [
+        520.0,
+        150.0
+      ],
+      "values": {
+        "folder": "raporlar",
+        "name": "arastirma_{tarih}.md",
+        "append": false
+      }
+    },
+    {
+      "id": "a36015c2",
+      "type": "ShowValue",
+      "pos": [
+        1300.0,
+        150.0
+      ],
+      "values": {
+        "prefix": "Video: ",
+        "log": false
+      }
+    },
+    {
+      "id": "791535b8",
+      "type": "Note",
+      "pos": [
+        0,
+        420
+      ],
+      "values": {
+        "text": "Günde bir kez: konuyu internette araştırır, video metni yazar, seslendirir, MP4 video yapar (videolar klasörü). YouTube bloğu kapalı: client_secret.json ayarlayıp Ctrl+E ile açın; video 'private' yüklenir, siz kontrol edip yayınlarsınız. Kendi resimleriniz için Video Üret bloğunda klasör seçin."
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "6db39061",
+      "src_port": "tick",
+      "dst": "3a69570f",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "586d24a7",
+      "src_port": "text",
+      "dst": "3a69570f",
+      "dst_port": "topic"
+    },
+    {
+      "src": "3a69570f",
+      "src_port": "report",
+      "dst": "c525b00b",
+      "dst_port": "prompt"
+    },
+    {
+      "src": "3a69570f",
+      "src_port": "done",
+      "dst": "c525b00b",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "c525b00b",
+      "src_port": "text",
+      "dst": "2cd0b896",
+      "dst_port": "text"
+    },
+    {
+      "src": "c525b00b",
+      "src_port": "done",
+      "dst": "2cd0b896",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "c525b00b",
+      "src_port": "text",
+      "dst": "d59d480b",
+      "dst_port": "script"
+    },
+    {
+      "src": "2cd0b896",
+      "src_port": "path",
+      "dst": "d59d480b",
+      "dst_port": "audio"
+    },
+    {
+      "src": "d59d480b",
+      "src_port": "path",
+      "dst": "b4ff8d0f",
+      "dst_port": "video"
+    },
+    {
+      "src": "586d24a7",
+      "src_port": "text",
+      "dst": "b4ff8d0f",
+      "dst_port": "title"
+    },
+    {
+      "src": "c525b00b",
+      "src_port": "text",
+      "dst": "b4ff8d0f",
+      "dst_port": "description"
+    },
+    {
+      "src": "3a69570f",
+      "src_port": "report",
+      "dst": "a651a343",
+      "dst_port": "text"
+    },
+    {
+      "src": "d59d480b",
+      "src_port": "path",
+      "dst": "a36015c2",
+      "dst_port": "value"
+    }
+  ]
+}

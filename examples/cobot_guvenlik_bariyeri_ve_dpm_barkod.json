@@ -1,0 +1,124 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "kaynak",
+      "type": "TestPattern",
+      "pos": [0.0, 0.0],
+      "values": {
+        "pattern": "Izgara (Grid)",
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "id": "isik_bariyeri",
+      "type": "VirtualSafetyLightCurtain",
+      "pos": [300.0, -90.0],
+      "values": {
+        "warning_zone_rect": "80,60,560,420",
+        "danger_zone_rect": "180,140,460,340",
+        "min_intruder_area_px": 500
+      }
+    },
+    {
+      "id": "dpm",
+      "type": "DPMBarcodeGrader",
+      "pos": [300.0, 110.0],
+      "values": {
+        "min_passing_grade": "Grade B (İyi)"
+      }
+    },
+    {
+      "id": "audit",
+      "type": "AuditTrailLogger",
+      "pos": [620.0, 110.0],
+      "values": {
+        "audit_log_file": "denetim_izi_21cfr11.json",
+        "current_user": "COBOT_OPERATOR"
+      }
+    },
+    {
+      "id": "onizleme",
+      "type": "Preview",
+      "pos": [620.0, -90.0],
+      "values": {
+        "overlay": ""
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "isik_bariyeri",
+      "dst_port": "image"
+    },
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "dpm",
+      "dst_port": "image"
+    },
+    {
+      "src": "isik_bariyeri",
+      "src_port": "estop_active",
+      "dst": "audit",
+      "dst_port": "log_trigger"
+    },
+    {
+      "src": "dpm",
+      "src_port": "decoded_text",
+      "dst": "audit",
+      "dst_port": "details"
+    },
+    {
+      "src": "isik_bariyeri",
+      "src_port": "safety_overlay_image",
+      "dst": "onizleme",
+      "dst_port": "image"
+    }
+  ],
+  "template": {
+    "title": "Cobot Güvenlik Işık Bariyeri + Metal DPM Kod Okuma",
+    "categories": [
+      "PLC",
+      "Otomasyon",
+      "Kalite kontrol"
+    ],
+    "description": "ISO 13849 uyumlu sanal güvenlik bariyeriyle cobot hücresine insan yaklaşımında yavaşlama, tehlikeli girişlerde anında Acil Stop (E-Stop) üretir; metal parça üzerindeki nokta vuruşlu DPM kodun kalite notunu doğrular.",
+    "questions": [
+      {
+        "id": "kaynak",
+        "label": "Görüntü kaynağı",
+        "kind": "source",
+        "default": "Örnek resimler",
+        "help": "Önce test deseniyle deneyin; sonra kameranızı seçin.",
+        "targets": [
+          {
+            "node": "kaynak"
+          }
+        ]
+      },
+      {
+        "id": "min_not",
+        "label": "Minimum Kabul Edilebilir Kalite Notu",
+        "kind": "choice",
+        "default": "Grade B (İyi)",
+        "choices": [
+          "Grade A (Mükemmel)",
+          "Grade B (İyi)",
+          "Grade C (Kabul Edilebilir)",
+          "Grade D (Sınırda)"
+        ],
+        "targets": [
+          {
+            "node": "dpm",
+            "param": "min_passing_grade"
+          }
+        ]
+      }
+    ]
+  }
+}

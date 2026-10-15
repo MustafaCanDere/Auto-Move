@@ -1,0 +1,242 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "kaynak",
+      "type": "ImageFolder",
+      "pos": [
+        0.0,
+        0.0
+      ],
+      "values": {
+        "folder": "examples/ornek_veri/sablonlar/kapak",
+        "loop": true,
+        "delay": 0.6,
+        "recursive": false
+      }
+    },
+    {
+      "id": "kenar",
+      "type": "EdgeDefect",
+      "pos": [
+        280.0,
+        -120.0
+      ],
+      "values": {
+        "roi": "",
+        "polarity": "açık parça / koyu zemin",
+        "threshold": 60,
+        "mode": "dışbükey zarf (çentik, kırık)",
+        "smooth": 15,
+        "min_depth": 6.0,
+        "min_part_area": 500
+      }
+    },
+    {
+      "id": "conta",
+      "type": "ColorArea",
+      "pos": [
+        280.0,
+        120.0
+      ],
+      "values": {
+        "roi": "150,90,180,180",
+        "h_min": 0,
+        "h_max": 179,
+        "s_min": 0,
+        "s_max": 50,
+        "v_min": 180,
+        "v_max": 255,
+        "min_pct": 20.0,
+        "max_pct": 100.0
+      }
+    },
+    {
+      "id": "ve",
+      "type": "Logic",
+      "pos": [
+        600.0,
+        0.0
+      ],
+      "values": {
+        "op": "and"
+      }
+    },
+    {
+      "id": "onizleme",
+      "type": "Preview",
+      "pos": [
+        600.0,
+        -220.0
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "karar",
+      "type": "ShowValue",
+      "pos": [
+        880.0,
+        -40.0
+      ],
+      "values": {
+        "prefix": "Kapak sağlam: ",
+        "log": false
+      }
+    },
+    {
+      "id": "conta_yuzde",
+      "type": "ShowValue",
+      "pos": [
+        600.0,
+        200.0
+      ],
+      "values": {
+        "prefix": "Conta alanı %: ",
+        "log": false
+      }
+    },
+    {
+      "id": "plc",
+      "type": "ModbusWrite",
+      "pos": [
+        880.0,
+        100.0
+      ],
+      "values": {
+        "host": "192.168.0.10",
+        "port": 502,
+        "unit": 1,
+        "kind": "coil",
+        "address": 1
+      },
+      "disabled": true
+    }
+  ],
+  "connections": [
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "kenar",
+      "dst_port": "image"
+    },
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "conta",
+      "dst_port": "image"
+    },
+    {
+      "src": "kenar",
+      "src_port": "image",
+      "dst": "onizleme",
+      "dst_port": "image"
+    },
+    {
+      "src": "kenar",
+      "src_port": "ok",
+      "dst": "ve",
+      "dst_port": "a"
+    },
+    {
+      "src": "conta",
+      "src_port": "ok",
+      "dst": "ve",
+      "dst_port": "b"
+    },
+    {
+      "src": "conta",
+      "src_port": "percent",
+      "dst": "conta_yuzde",
+      "dst_port": "value"
+    },
+    {
+      "src": "ve",
+      "src_port": "result",
+      "dst": "karar",
+      "dst_port": "value"
+    },
+    {
+      "src": "ve",
+      "src_port": "result",
+      "dst": "plc",
+      "dst_port": "value"
+    }
+  ],
+  "template": {
+    "title": "Kapak ve conta kontrolü",
+    "categories": [
+      "Kalite kontrol",
+      "PLC"
+    ],
+    "description": "Kapağın kenarında kırık/çentik var mı (Kenar Kusuru Bul) ve conta halkası yerinde, kopuk değil mi (beyaz alan %) bakar; ikisi de iyiyse kapak sağlam.",
+    "questions": [
+      {
+        "id": "kaynak",
+        "label": "Görüntü kaynağı",
+        "kind": "source",
+        "default": "Örnek resimler",
+        "help": "Önce örnek resimlerle deneyin; sonra kameranızı seçin.",
+        "targets": [
+          {
+            "node": "kaynak"
+          }
+        ]
+      },
+      {
+        "id": "conta",
+        "label": "Conta en az alan (bölgenin %'si)",
+        "kind": "float",
+        "default": 20,
+        "min": 0,
+        "max": 100,
+        "targets": [
+          {
+            "node": "conta",
+            "param": "min_pct"
+          }
+        ]
+      },
+      {
+        "id": "derinlik",
+        "label": "Kenar kırığı en az derinlik (piksel)",
+        "kind": "float",
+        "default": 6,
+        "min": 0.5,
+        "max": 500,
+        "targets": [
+          {
+            "node": "kenar",
+            "param": "min_depth"
+          }
+        ]
+      },
+      {
+        "id": "plc",
+        "label": "Sonucu PLC'ye yaz (Modbus TCP)",
+        "kind": "bool",
+        "default": false,
+        "targets": [
+          {
+            "node": "plc",
+            "enabled": true
+          }
+        ]
+      },
+      {
+        "id": "plc_ip",
+        "label": "PLC IP adresi",
+        "kind": "str",
+        "default": "192.168.0.10",
+        "targets": [
+          {
+            "node": "plc",
+            "param": "host"
+          }
+        ]
+      }
+    ]
+  }
+}

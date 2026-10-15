@@ -1,0 +1,197 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "3de5d0ae",
+      "type": "TestPattern",
+      "pos": [
+        0,
+        0
+      ],
+      "values": {
+        "width": 640,
+        "height": 480,
+        "animate": true,
+        "motion": "bant"
+      }
+    },
+    {
+      "id": "96607573",
+      "type": "ColorRange",
+      "pos": [
+        240,
+        0
+      ],
+      "values": {
+        "h_min": 170,
+        "h_max": 10,
+        "s_min": 120,
+        "s_max": 255,
+        "v_min": 70,
+        "v_max": 255
+      }
+    },
+    {
+      "id": "c884f798",
+      "type": "FindContours",
+      "pos": [
+        480,
+        0
+      ],
+      "values": {
+        "min_area": 200,
+        "max_area": 0
+      }
+    },
+    {
+      "id": "faa1f07b",
+      "type": "ObjectTracker",
+      "pos": [
+        720,
+        0
+      ],
+      "values": {
+        "max_lost": 15,
+        "max_dist": 120
+      }
+    },
+    {
+      "id": "83380bc8",
+      "type": "LineCounter",
+      "pos": [
+        960,
+        0
+      ],
+      "values": {
+        "line": "320,480,320,0"
+      }
+    },
+    {
+      "id": "cebd06b1",
+      "type": "DrawDetections",
+      "pos": [
+        1200,
+        0
+      ],
+      "values": {
+        "show_score": true,
+        "thickness": 2
+      }
+    },
+    {
+      "id": "b8dcc5b2",
+      "type": "Preview",
+      "pos": [
+        1440,
+        0
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "3b677725",
+      "type": "ShowValue",
+      "pos": [
+        1200,
+        300
+      ],
+      "values": {
+        "prefix": "Toplam geçiş: ",
+        "log": false
+      }
+    },
+    {
+      "id": "ffe2f3a8",
+      "type": "HoldPulse",
+      "pos": [
+        960,
+        380
+      ],
+      "values": {
+        "seconds": 1.0
+      }
+    },
+    {
+      "id": "205e7a01",
+      "type": "ShowValue",
+      "pos": [
+        1200,
+        420
+      ],
+      "values": {
+        "prefix": "PLC sinyali: ",
+        "log": false
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "3de5d0ae",
+      "src_port": "image",
+      "dst": "96607573",
+      "dst_port": "image"
+    },
+    {
+      "src": "96607573",
+      "src_port": "mask",
+      "dst": "c884f798",
+      "dst_port": "mask"
+    },
+    {
+      "src": "c884f798",
+      "src_port": "detections",
+      "dst": "faa1f07b",
+      "dst_port": "detections"
+    },
+    {
+      "src": "faa1f07b",
+      "src_port": "detections",
+      "dst": "83380bc8",
+      "dst_port": "detections"
+    },
+    {
+      "src": "3de5d0ae",
+      "src_port": "image",
+      "dst": "83380bc8",
+      "dst_port": "image"
+    },
+    {
+      "src": "83380bc8",
+      "src_port": "image",
+      "dst": "cebd06b1",
+      "dst_port": "image"
+    },
+    {
+      "src": "faa1f07b",
+      "src_port": "detections",
+      "dst": "cebd06b1",
+      "dst_port": "detections"
+    },
+    {
+      "src": "cebd06b1",
+      "src_port": "image",
+      "dst": "b8dcc5b2",
+      "dst_port": "image"
+    },
+    {
+      "src": "83380bc8",
+      "src_port": "total",
+      "dst": "3b677725",
+      "dst_port": "value"
+    },
+    {
+      "src": "83380bc8",
+      "src_port": "crossed",
+      "dst": "ffe2f3a8",
+      "dst_port": "signal"
+    },
+    {
+      "src": "ffe2f3a8",
+      "src_port": "out",
+      "dst": "205e7a01",
+      "dst_port": "value"
+    }
+  ]
+}

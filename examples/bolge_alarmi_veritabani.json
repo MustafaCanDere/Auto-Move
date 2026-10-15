@@ -1,0 +1,218 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "763ffc75",
+      "type": "TestPattern",
+      "pos": [
+        0,
+        0
+      ],
+      "values": {
+        "width": 640,
+        "height": 480,
+        "animate": true,
+        "motion": "salınım"
+      }
+    },
+    {
+      "id": "0971d8d1",
+      "type": "ColorRange",
+      "pos": [
+        260,
+        0
+      ],
+      "values": {
+        "h_min": 0,
+        "h_max": 10,
+        "s_min": 120,
+        "s_max": 255,
+        "v_min": 70,
+        "v_max": 255
+      }
+    },
+    {
+      "id": "01802cd8",
+      "type": "FindContours",
+      "pos": [
+        520,
+        0
+      ],
+      "values": {
+        "min_area": 300,
+        "max_area": 0
+      }
+    },
+    {
+      "id": "f3ce6e46",
+      "type": "ZoneCounter",
+      "pos": [
+        780,
+        0
+      ],
+      "values": {
+        "zone": "380,40,620,40,620,300,380,300",
+        "point": "merkez",
+        "min_count": 1
+      }
+    },
+    {
+      "id": "c6451247",
+      "type": "Preview",
+      "pos": [
+        1040,
+        0
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "7a05a45f",
+      "type": "SQLiteLogger",
+      "pos": [
+        1040,
+        240
+      ],
+      "values": {
+        "path": "bolge_kayitlari.db",
+        "table": "bolge",
+        "names": "adet,dolu,x"
+      }
+    },
+    {
+      "id": "5ccbcb88",
+      "type": "Chart",
+      "pos": [
+        780,
+        300
+      ],
+      "values": {
+        "points": 150,
+        "width": 480,
+        "height": 220,
+        "title": "bolgedeki nesne",
+        "names": "adet"
+      }
+    },
+    {
+      "id": "19e68444",
+      "type": "Preview",
+      "pos": [
+        1040,
+        400
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "b9519a10",
+      "type": "TelegramSend",
+      "pos": [
+        1300,
+        240
+      ],
+      "values": {
+        "token": "",
+        "chat_id": "",
+        "text": "Tehlikeli bölgede nesne var! ({v})",
+        "cooldown": 10.0,
+        "api": "https://api.telegram.org"
+      },
+      "disabled": true
+    },
+    {
+      "id": "a85401cb",
+      "type": "Note",
+      "pos": [
+        0,
+        260
+      ],
+      "values": {
+        "text": "Kırmızı top sağdaki bölgeye girince bölge kırmızı olur, olay SQLite veritabanına yazılır. Telegram bloğu kapalı: token ve chat ID girip Ctrl+E ile açın."
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "763ffc75",
+      "src_port": "image",
+      "dst": "0971d8d1",
+      "dst_port": "image"
+    },
+    {
+      "src": "0971d8d1",
+      "src_port": "mask",
+      "dst": "01802cd8",
+      "dst_port": "mask"
+    },
+    {
+      "src": "01802cd8",
+      "src_port": "detections",
+      "dst": "f3ce6e46",
+      "dst_port": "detections"
+    },
+    {
+      "src": "763ffc75",
+      "src_port": "image",
+      "dst": "f3ce6e46",
+      "dst_port": "image"
+    },
+    {
+      "src": "f3ce6e46",
+      "src_port": "image",
+      "dst": "c6451247",
+      "dst_port": "image"
+    },
+    {
+      "src": "f3ce6e46",
+      "src_port": "count",
+      "dst": "7a05a45f",
+      "dst_port": "a"
+    },
+    {
+      "src": "f3ce6e46",
+      "src_port": "occupied",
+      "dst": "7a05a45f",
+      "dst_port": "b"
+    },
+    {
+      "src": "f3ce6e46",
+      "src_port": "occupied",
+      "dst": "7a05a45f",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "f3ce6e46",
+      "src_port": "count",
+      "dst": "5ccbcb88",
+      "dst_port": "a"
+    },
+    {
+      "src": "5ccbcb88",
+      "src_port": "image",
+      "dst": "19e68444",
+      "dst_port": "image"
+    },
+    {
+      "src": "f3ce6e46",
+      "src_port": "occupied",
+      "dst": "b9519a10",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "f3ce6e46",
+      "src_port": "image",
+      "dst": "b9519a10",
+      "dst_port": "image"
+    },
+    {
+      "src": "f3ce6e46",
+      "src_port": "count",
+      "dst": "b9519a10",
+      "dst_port": "value"
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "e693df60",
+      "type": "ImageFile",
+      "pos": [
+        0,
+        0
+      ],
+      "values": {
+        "path": "examples/ornek_veri/test_hatali.png"
+      }
+    },
+    {
+      "id": "474d6b9d",
+      "type": "AnomalyDetector",
+      "pos": [
+        240,
+        0
+      ],
+      "values": {
+        "folder": "examples/ornek_veri/saglam",
+        "threshold": 6.0,
+        "min_area": 30,
+        "size": 256,
+        "blur": 5
+      }
+    },
+    {
+      "id": "d4e12fd9",
+      "type": "DrawDetections",
+      "pos": [
+        480,
+        0
+      ],
+      "values": {
+        "show_score": true,
+        "thickness": 2
+      }
+    },
+    {
+      "id": "76d18627",
+      "type": "Preview",
+      "pos": [
+        720,
+        0
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "42f3f96f",
+      "type": "TextFormat",
+      "pos": [
+        480,
+        320
+      ],
+      "values": {
+        "template": "Sonuç: {a}  skor: {b}"
+      }
+    },
+    {
+      "id": "a1f73e29",
+      "type": "ShowValue",
+      "pos": [
+        720,
+        320
+      ],
+      "values": {
+        "prefix": "",
+        "log": false
+      }
+    },
+    {
+      "id": "eba46f30",
+      "type": "Note",
+      "pos": [
+        0,
+        260
+      ],
+      "values": {
+        "text": "Anomali tespiti: sadece SAĞLAM örneklerle öğrenir.\nResim dosyasını test_saglam.png yapıp\nfarkı görün. Isı haritası için Anomali\nbloğunu seçin."
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "e693df60",
+      "src_port": "image",
+      "dst": "474d6b9d",
+      "dst_port": "image"
+    },
+    {
+      "src": "e693df60",
+      "src_port": "image",
+      "dst": "d4e12fd9",
+      "dst_port": "image"
+    },
+    {
+      "src": "474d6b9d",
+      "src_port": "detections",
+      "dst": "d4e12fd9",
+      "dst_port": "detections"
+    },
+    {
+      "src": "d4e12fd9",
+      "src_port": "image",
+      "dst": "76d18627",
+      "dst_port": "image"
+    },
+    {
+      "src": "474d6b9d",
+      "src_port": "ok",
+      "dst": "42f3f96f",
+      "dst_port": "a"
+    },
+    {
+      "src": "474d6b9d",
+      "src_port": "score",
+      "dst": "42f3f96f",
+      "dst_port": "b"
+    },
+    {
+      "src": "42f3f96f",
+      "src_port": "text",
+      "dst": "a1f73e29",
+      "dst_port": "value"
+    }
+  ]
+}

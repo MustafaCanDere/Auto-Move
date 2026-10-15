@@ -1,0 +1,120 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "kaynak",
+      "type": "TestPattern",
+      "pos": [0.0, 0.0],
+      "values": {
+        "pattern": "Izgara (Grid)",
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "id": "ar_rehber",
+      "type": "ARProjectionGuidance",
+      "pos": [300.0, 0.0],
+      "values": {
+        "preset_recipe": "Elektronik Kart Montajı",
+        "display_mode": "Kamera Üstü AR (HUD)",
+        "guide_color": "Neon Mavi",
+        "enable_auto_verify": true,
+        "auto_advance_delay_sec": 1.5
+      }
+    },
+    {
+      "id": "oee",
+      "type": "OEECalculator",
+      "pos": [600.0, 100.0],
+      "values": {
+        "ideal_cycle_time_sec": 12.0
+      }
+    },
+    {
+      "id": "onizleme",
+      "type": "Preview",
+      "pos": [600.0, -100.0],
+      "values": {
+        "overlay": ""
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "ar_rehber",
+      "dst_port": "image"
+    },
+    {
+      "src": "ar_rehber",
+      "src_port": "all_steps_done",
+      "dst": "oee",
+      "dst_port": "part_trigger"
+    },
+    {
+      "src": "ar_rehber",
+      "src_port": "ar_projection_image",
+      "dst": "onizleme",
+      "dst_port": "image"
+    }
+  ],
+  "template": {
+    "title": "Artırılmış Gerçeklik (AR) Montaj Rehberi",
+    "categories": [
+      "Otomasyon",
+      "Kalite kontrol"
+    ],
+    "description": "Manuel montaj masasında operatöre adım adım projeksiyon veya ekran HUD ile görsel montaj talimatları, parça yerleşim kutuları ve tork değerleri sunar.",
+    "questions": [
+      {
+        "id": "kaynak",
+        "label": "Görüntü kaynağı",
+        "kind": "source",
+        "default": "Örnek resimler",
+        "help": "Önce test deseniyle deneyin; sonra kameranızı seçin.",
+        "targets": [
+          {
+            "node": "kaynak"
+          }
+        ]
+      },
+      {
+        "id": "recete",
+        "label": "Montaj Şablonu",
+        "kind": "choice",
+        "default": "Elektronik Kart Montajı",
+        "choices": [
+          "Elektronik Kart Montajı",
+          "Kablo Demeti Soketleme",
+          "Motor Bloğu Civata Sıkma",
+          "Özel JSON"
+        ],
+        "targets": [
+          {
+            "node": "ar_rehber",
+            "param": "preset_recipe"
+          }
+        ]
+      },
+      {
+        "id": "mod",
+        "label": "Görüntüleme Modu",
+        "kind": "choice",
+        "default": "Kamera Üstü AR (HUD)",
+        "choices": [
+          "Kamera Üstü AR (HUD)",
+          "Projektör Karanlık Mod (Yansıtma)"
+        ],
+        "targets": [
+          {
+            "node": "ar_rehber",
+            "param": "display_mode"
+          }
+        ]
+      }
+    ]
+  }
+}

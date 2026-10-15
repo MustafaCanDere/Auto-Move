@@ -1,0 +1,124 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "d6a09f4a",
+      "type": "RssFeed",
+      "pos": [
+        0.0,
+        0.0
+      ],
+      "values": {
+        "url": "https://www.aa.com.tr/tr/rss/default?cat=guncel",
+        "words": "yapay zeka, robot, otomasyon",
+        "interval": 600.0,
+        "existing": false
+      }
+    },
+    {
+      "id": "c9ed3e44",
+      "type": "AskAI",
+      "pos": [
+        260.0,
+        0.0
+      ],
+      "values": {
+        "template": "Bu haberi Türkçe, en fazla 3 cümleyle özetle. Sonuna kaynağı yazma.\n\n{prompt}",
+        "system": "",
+        "use_memory": false,
+        "chat_memory": false,
+        "session": "genel",
+        "effort": "low",
+        "max_tokens": 3000
+      }
+    },
+    {
+      "id": "80517d7c",
+      "type": "TextFormat",
+      "pos": [
+        520.0,
+        0.0
+      ],
+      "values": {
+        "template": "📰 {a}\n\n{b}\n{c}"
+      }
+    },
+    {
+      "id": "be1c0027",
+      "type": "TelegramSend",
+      "pos": [
+        780.0,
+        0.0
+      ],
+      "values": {
+        "token": "",
+        "chat_id": "",
+        "text": "{v}",
+        "cooldown": 0,
+        "api": "https://api.telegram.org"
+      }
+    },
+    {
+      "id": "abf44650",
+      "type": "Note",
+      "pos": [
+        0,
+        330
+      ],
+      "values": {
+        "text": "Haber özeti: RSS akışındaki yeni haberlerden seçtiğiniz kelimeleri içerenleri Claude 3 cümleyle özetler ve Telegram'a gönderir. Telegram Gönder bloğuna kendi chat ID'nizi yazın. Haber Akışı bloğuna istediğiniz sitenin RSS adresini (virgülle birden çok) yazabilirsiniz."
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "d6a09f4a",
+      "src_port": "text",
+      "dst": "c9ed3e44",
+      "dst_port": "prompt"
+    },
+    {
+      "src": "d6a09f4a",
+      "src_port": "new",
+      "dst": "c9ed3e44",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "d6a09f4a",
+      "src_port": "title",
+      "dst": "80517d7c",
+      "dst_port": "a"
+    },
+    {
+      "src": "c9ed3e44",
+      "src_port": "text",
+      "dst": "80517d7c",
+      "dst_port": "b"
+    },
+    {
+      "src": "d6a09f4a",
+      "src_port": "link",
+      "dst": "80517d7c",
+      "dst_port": "c"
+    },
+    {
+      "src": "80517d7c",
+      "src_port": "text",
+      "dst": "be1c0027",
+      "dst_port": "value"
+    },
+    {
+      "src": "c9ed3e44",
+      "src_port": "done",
+      "dst": "be1c0027",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "c9ed3e44",
+      "src_port": "done",
+      "dst": "d6a09f4a",
+      "dst_port": "next"
+    }
+  ]
+}

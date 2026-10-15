@@ -1,0 +1,177 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "kaynak",
+      "type": "ImageFolder",
+      "pos": [
+        0.0,
+        0.0
+      ],
+      "values": {
+        "folder": "examples/ornek_veri/sablonlar/hizalama",
+        "loop": true,
+        "delay": 0.6,
+        "recursive": false
+      }
+    },
+    {
+      "id": "delik",
+      "type": "HoughCircles",
+      "pos": [
+        280.0,
+        0.0
+      ],
+      "values": {
+        "min_r": 15,
+        "max_r": 30,
+        "min_dist": 60,
+        "roundness": 0.8,
+        "edge": 100
+      }
+    },
+    {
+      "id": "hiza",
+      "type": "AlignmentCheck",
+      "pos": [
+        560.0,
+        0.0
+      ],
+      "values": {
+        "mode": "iki tespitin merkezleri",
+        "pick": "soldan ilk iki",
+        "label": "",
+        "nominal_angle": 0.0,
+        "angle_tol": 2.0,
+        "nominal_x": 240,
+        "nominal_y": 180,
+        "offset_tol": 10.0,
+        "px_per_mm": 0.0
+      }
+    },
+    {
+      "id": "onizleme",
+      "type": "Preview",
+      "pos": [
+        840.0,
+        -120.0
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "karar",
+      "type": "ShowValue",
+      "pos": [
+        840.0,
+        60.0
+      ],
+      "values": {
+        "prefix": "Hizalı: ",
+        "log": false
+      }
+    },
+    {
+      "id": "aci",
+      "type": "ShowValue",
+      "pos": [
+        840.0,
+        200.0
+      ],
+      "values": {
+        "prefix": "Açı sapması (°): ",
+        "log": false
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "delik",
+      "dst_port": "image"
+    },
+    {
+      "src": "delik",
+      "src_port": "detections",
+      "dst": "hiza",
+      "dst_port": "detections"
+    },
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "hiza",
+      "dst_port": "image"
+    },
+    {
+      "src": "hiza",
+      "src_port": "image",
+      "dst": "onizleme",
+      "dst_port": "image"
+    },
+    {
+      "src": "hiza",
+      "src_port": "ok",
+      "dst": "karar",
+      "dst_port": "value"
+    },
+    {
+      "src": "hiza",
+      "src_port": "angle_error",
+      "dst": "aci",
+      "dst_port": "value"
+    }
+  ],
+  "template": {
+    "title": "Plaka hizalama kontrolü",
+    "categories": [
+      "Ölçüm",
+      "Kalite kontrol"
+    ],
+    "description": "Plakanın iki deliğini bulur, açısını ve merkezini beklenenle karşılaştırır: robot/fikstür öncesi parça doğru oturmuş mu?",
+    "questions": [
+      {
+        "id": "kaynak",
+        "label": "Görüntü kaynağı",
+        "kind": "source",
+        "default": "Örnek resimler",
+        "help": "Önce örnek resimlerle deneyin; sonra kameranızı seçin.",
+        "targets": [
+          {
+            "node": "kaynak"
+          }
+        ]
+      },
+      {
+        "id": "aci",
+        "label": "Açı toleransı ± (°)",
+        "kind": "float",
+        "default": 2,
+        "min": 0,
+        "max": 90,
+        "targets": [
+          {
+            "node": "hiza",
+            "param": "angle_tol"
+          }
+        ]
+      },
+      {
+        "id": "kayma",
+        "label": "Kayma toleransı (piksel)",
+        "kind": "float",
+        "default": 10,
+        "min": 0,
+        "max": 10000,
+        "targets": [
+          {
+            "node": "hiza",
+            "param": "offset_tol"
+          }
+        ]
+      }
+    ]
+  }
+}

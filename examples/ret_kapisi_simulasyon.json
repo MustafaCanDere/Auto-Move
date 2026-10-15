@@ -1,0 +1,219 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "6439cfcd",
+      "type": "SignalSimulator",
+      "pos": [
+        0,
+        0
+      ],
+      "values": {
+        "rate": 60,
+        "bad_ratio": 20,
+        "seed": 1,
+        "pulses_per_part": 100,
+        "mean": 10.0,
+        "sd": 0.05,
+        "drift": 0.0,
+        "stop_every": 60,
+        "stop_seconds": 10
+      }
+    },
+    {
+      "id": "53d20814",
+      "type": "RejectDelay",
+      "pos": [
+        300,
+        0
+      ],
+      "values": {
+        "mode": "parça sayısı",
+        "distance": 3,
+        "pulse_ms": 150,
+        "encoder_max": 0
+      }
+    },
+    {
+      "id": "da2a52b6",
+      "type": "OEECalc",
+      "pos": [
+        300,
+        260
+      ],
+      "values": {
+        "ideal_cycle": 0.9,
+        "count_mode": "sayaç değeri",
+        "shift_times": ""
+      }
+    },
+    {
+      "id": "f5511a8c",
+      "type": "SPCChart",
+      "pos": [
+        300,
+        520
+      ],
+      "values": {
+        "lsl": 9.8,
+        "usl": 10.2,
+        "subgroup": 1,
+        "baseline": 10,
+        "window": 100,
+        "extra_rules": false
+      }
+    },
+    {
+      "id": "d687db53",
+      "type": "ShowValue",
+      "pos": [
+        620,
+        -60
+      ],
+      "values": {
+        "prefix": "Üfle: ",
+        "log": false
+      }
+    },
+    {
+      "id": "08874873",
+      "type": "ShowValue",
+      "pos": [
+        620,
+        60
+      ],
+      "values": {
+        "prefix": "Bekleyen ret: ",
+        "log": false
+      }
+    },
+    {
+      "id": "ebf5a46f",
+      "type": "ShowValue",
+      "pos": [
+        620,
+        260
+      ],
+      "values": {
+        "prefix": "OEE %: ",
+        "log": false
+      }
+    },
+    {
+      "id": "21f87c01",
+      "type": "ShowValue",
+      "pos": [
+        620,
+        520
+      ],
+      "values": {
+        "prefix": "SPC alarmı: ",
+        "log": false
+      }
+    },
+    {
+      "id": "4291b90e",
+      "type": "ShowValue",
+      "pos": [
+        620,
+        640
+      ],
+      "values": {
+        "prefix": "Cpk: ",
+        "log": false
+      }
+    },
+    {
+      "id": "fcba61f9",
+      "type": "Note",
+      "pos": [
+        0,
+        300
+      ],
+      "values": {
+        "text": "Donanımsız deneme: Sinyal Üreteci dakikada 60 parça üretir, %20'si hatalı.\nRet Kapısı Gecikmesi hatalı parçayı 3 parça sonra (üfleyicinin önüne gelince) atar.\nOEE her 60 sn'de 10 sn'lik duruşu görür; SPC ilk 10 ölçümden sınırları öğrenir."
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "6439cfcd",
+      "src_port": "trigger",
+      "dst": "53d20814",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "6439cfcd",
+      "src_port": "bad",
+      "dst": "53d20814",
+      "dst_port": "bad"
+    },
+    {
+      "src": "6439cfcd",
+      "src_port": "encoder",
+      "dst": "53d20814",
+      "dst_port": "encoder"
+    },
+    {
+      "src": "6439cfcd",
+      "src_port": "running",
+      "dst": "da2a52b6",
+      "dst_port": "running"
+    },
+    {
+      "src": "6439cfcd",
+      "src_port": "good_count",
+      "dst": "da2a52b6",
+      "dst_port": "good"
+    },
+    {
+      "src": "6439cfcd",
+      "src_port": "bad_count",
+      "dst": "da2a52b6",
+      "dst_port": "bad"
+    },
+    {
+      "src": "6439cfcd",
+      "src_port": "measurement",
+      "dst": "f5511a8c",
+      "dst_port": "value"
+    },
+    {
+      "src": "6439cfcd",
+      "src_port": "trigger",
+      "dst": "f5511a8c",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "53d20814",
+      "src_port": "reject",
+      "dst": "d687db53",
+      "dst_port": "value"
+    },
+    {
+      "src": "53d20814",
+      "src_port": "pending",
+      "dst": "08874873",
+      "dst_port": "value"
+    },
+    {
+      "src": "da2a52b6",
+      "src_port": "oee",
+      "dst": "ebf5a46f",
+      "dst_port": "value"
+    },
+    {
+      "src": "f5511a8c",
+      "src_port": "alarm_text",
+      "dst": "21f87c01",
+      "dst_port": "value"
+    },
+    {
+      "src": "f5511a8c",
+      "src_port": "cpk",
+      "dst": "4291b90e",
+      "dst_port": "value"
+    }
+  ]
+}

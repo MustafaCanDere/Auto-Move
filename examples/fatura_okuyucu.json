@@ -1,0 +1,160 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "8212312f",
+      "type": "FolderWatch",
+      "pos": [
+        0.0,
+        150.0
+      ],
+      "values": {
+        "folder": "faturalar",
+        "pattern": "*.pdf,*.docx,*.txt",
+        "interval": 2.0,
+        "existing": false
+      }
+    },
+    {
+      "id": "26fa290e",
+      "type": "ReadDocument",
+      "pos": [
+        260.0,
+        150.0
+      ],
+      "values": {
+        "max_chars": 100000
+      }
+    },
+    {
+      "id": "b21582d0",
+      "type": "ExtractInfo",
+      "pos": [
+        520.0,
+        150.0
+      ],
+      "values": {
+        "fields": "firma,tutar,tarih",
+        "hint": "Fatura veya makbuz; tutar para birimiyle birlikte"
+      }
+    },
+    {
+      "id": "cb283a42",
+      "type": "SQLiteLogger",
+      "pos": [
+        780.0,
+        0.0
+      ],
+      "values": {
+        "path": "faturalar.db",
+        "table": "faturalar",
+        "names": "firma,tutar,tarih"
+      }
+    },
+    {
+      "id": "0056572b",
+      "type": "ShowValue",
+      "pos": [
+        780.0,
+        150.0
+      ],
+      "values": {
+        "prefix": "Okunan: ",
+        "log": false
+      }
+    },
+    {
+      "id": "2ac3406c",
+      "type": "MoveFile",
+      "pos": [
+        780.0,
+        300.0
+      ],
+      "values": {
+        "folder": "faturalar_islendi",
+        "mode": "taşı",
+        "dated": false
+      }
+    },
+    {
+      "id": "98919db4",
+      "type": "Note",
+      "pos": [
+        0,
+        330
+      ],
+      "values": {
+        "text": "Fatura okuyucu: 'faturalar' klasörüne bırakılan her PDF/Word dosyasından Claude firma, tutar ve tarihi çıkarır, faturalar.db veritabanına yazar, dosyayı 'faturalar_islendi' klasörüne taşır. Alanları Bilgi Çıkar bloğundan değiştirebilirsiniz."
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "8212312f",
+      "src_port": "path",
+      "dst": "2ac3406c",
+      "dst_port": "path"
+    },
+    {
+      "src": "b21582d0",
+      "src_port": "done",
+      "dst": "2ac3406c",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "8212312f",
+      "src_port": "path",
+      "dst": "26fa290e",
+      "dst_port": "path"
+    },
+    {
+      "src": "26fa290e",
+      "src_port": "text",
+      "dst": "b21582d0",
+      "dst_port": "text"
+    },
+    {
+      "src": "8212312f",
+      "src_port": "new",
+      "dst": "b21582d0",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "b21582d0",
+      "src_port": "a",
+      "dst": "cb283a42",
+      "dst_port": "a"
+    },
+    {
+      "src": "b21582d0",
+      "src_port": "b",
+      "dst": "cb283a42",
+      "dst_port": "b"
+    },
+    {
+      "src": "b21582d0",
+      "src_port": "c",
+      "dst": "cb283a42",
+      "dst_port": "c"
+    },
+    {
+      "src": "b21582d0",
+      "src_port": "done",
+      "dst": "cb283a42",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "b21582d0",
+      "src_port": "done",
+      "dst": "8212312f",
+      "dst_port": "next"
+    },
+    {
+      "src": "b21582d0",
+      "src_port": "summary",
+      "dst": "0056572b",
+      "dst_port": "value"
+    }
+  ]
+}

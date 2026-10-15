@@ -1,0 +1,139 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "d18d32a0",
+      "type": "Camera",
+      "pos": [
+        0,
+        0
+      ],
+      "values": {
+        "source": "0",
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "id": "f27a53bd",
+      "type": "FaceDetector",
+      "pos": [
+        260,
+        0
+      ],
+      "values": {
+        "min_size": 40
+      }
+    },
+    {
+      "id": "5363f26f",
+      "type": "DrawDetections",
+      "pos": [
+        500,
+        0
+      ],
+      "values": {
+        "show_score": true,
+        "thickness": 2
+      }
+    },
+    {
+      "id": "8e3f108b",
+      "type": "Preview",
+      "pos": [
+        740,
+        0
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "765023ac",
+      "type": "Compare",
+      "pos": [
+        500,
+        300
+      ],
+      "values": {
+        "op": ">=",
+        "b": 1
+      }
+    },
+    {
+      "id": "ba6bfa3a",
+      "type": "Debounce",
+      "pos": [
+        740,
+        300
+      ],
+      "values": {
+        "seconds": 1.0
+      }
+    },
+    {
+      "id": "2dfff5ab",
+      "type": "SaveImage",
+      "pos": [
+        980,
+        300
+      ],
+      "values": {
+        "folder": "yuzler",
+        "prefix": "yuz",
+        "every_n": 0
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "d18d32a0",
+      "src_port": "image",
+      "dst": "f27a53bd",
+      "dst_port": "image"
+    },
+    {
+      "src": "d18d32a0",
+      "src_port": "image",
+      "dst": "5363f26f",
+      "dst_port": "image"
+    },
+    {
+      "src": "f27a53bd",
+      "src_port": "detections",
+      "dst": "5363f26f",
+      "dst_port": "detections"
+    },
+    {
+      "src": "5363f26f",
+      "src_port": "image",
+      "dst": "8e3f108b",
+      "dst_port": "image"
+    },
+    {
+      "src": "f27a53bd",
+      "src_port": "count",
+      "dst": "765023ac",
+      "dst_port": "a"
+    },
+    {
+      "src": "765023ac",
+      "src_port": "result",
+      "dst": "ba6bfa3a",
+      "dst_port": "signal"
+    },
+    {
+      "src": "ba6bfa3a",
+      "src_port": "stable",
+      "dst": "2dfff5ab",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "5363f26f",
+      "src_port": "image",
+      "dst": "2dfff5ab",
+      "dst_port": "image"
+    }
+  ]
+}

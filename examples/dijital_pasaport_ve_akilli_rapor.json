@@ -1,0 +1,115 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "kaynak",
+      "type": "TestPattern",
+      "pos": [0.0, 0.0],
+      "values": {
+        "pattern": "Daireler (Kalibrasyon)",
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "id": "pasaport",
+      "type": "DigitalProductPassport",
+      "pos": [320.0, -80.0],
+      "values": {
+        "company_name": "VisionFlow Akıllı Fabrika A.Ş.",
+        "product_category": "Otomotiv & Endüstriyel Bileşen",
+        "batch_lot": "LOT-2026-X1",
+        "recycled_content_pct": 45.0,
+        "export_folder": "dijital_pasaportlar"
+      }
+    },
+    {
+      "id": "rapor",
+      "type": "SmartReportGenerate",
+      "pos": [320.0, 140.0],
+      "values": {
+        "report_format": "HTML & Yazdırılabilir PDF",
+        "output_filename": "gunluk_uretim_raporu.html",
+        "operator_name": "Kalite Başmühendisi",
+        "production_line": "Hat 1 - Otomatik Montaj",
+        "include_images": true
+      }
+    },
+    {
+      "id": "onizleme",
+      "type": "Preview",
+      "pos": [680.0, 0.0],
+      "values": {
+        "overlay": ""
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "pasaport",
+      "dst_port": "image"
+    },
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "rapor",
+      "dst_port": "image"
+    },
+    {
+      "src": "pasaport",
+      "src_port": "passport_qr",
+      "dst": "onizleme",
+      "dst_port": "image"
+    }
+  ],
+  "template": {
+    "title": "Dijital Ürün Pasaportu (DPP) + Otomatik Rapor",
+    "categories": [
+      "Kalite kontrol",
+      "Ölçüm",
+      "Otomasyon"
+    ],
+    "description": "Her üretilen parça için AB 2026 regülasyonuna tam uyumlu Kriptografik Dijital Ürün Pasaportu (DPP & QR kod) ve anlık HTML/PDF kalite raporu üretir.",
+    "questions": [
+      {
+        "id": "kaynak",
+        "label": "Görüntü kaynağı",
+        "kind": "source",
+        "default": "Örnek resimler",
+        "help": "Önce test deseniyle deneyin; sonra kameranızı seçin.",
+        "targets": [
+          {
+            "node": "kaynak"
+          }
+        ]
+      },
+      {
+        "id": "sirket",
+        "label": "Üretici Firma Adı",
+        "kind": "str",
+        "default": "VisionFlow Akıllı Fabrika A.Ş.",
+        "targets": [
+          {
+            "node": "pasaport",
+            "param": "company_name"
+          }
+        ]
+      },
+      {
+        "id": "lot",
+        "label": "Parti / Lot Kodu",
+        "kind": "str",
+        "default": "LOT-2026-X1",
+        "targets": [
+          {
+            "node": "pasaport",
+            "param": "batch_lot"
+          }
+        ]
+      }
+    ]
+  }
+}

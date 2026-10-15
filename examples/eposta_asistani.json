@@ -1,0 +1,155 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "bc1c6362",
+      "type": "EmailRead",
+      "pos": [
+        0.0,
+        75.0
+      ],
+      "values": {
+        "user": "",
+        "password": "",
+        "host": "",
+        "folder": "INBOX",
+        "interval": 60,
+        "mark_seen": false,
+        "skip": "noreply,no-reply,mailer-daemon"
+      }
+    },
+    {
+      "id": "5611b5e1",
+      "type": "AskAI",
+      "pos": [
+        260.0,
+        75.0
+      ],
+      "values": {
+        "template": "Aşağıdaki e-postaya şirketimiz adına kibar, kısa ve yardımcı bir cevap yaz. Sadece cevap metnini yaz (konu satırı yazma). Bilmediğin bir konuda söz verme.\n\n{prompt}",
+        "system": "",
+        "use_memory": true,
+        "chat_memory": false,
+        "session": "genel",
+        "effort": "medium",
+        "max_tokens": 3000
+      }
+    },
+    {
+      "id": "470fe5fd",
+      "type": "EmailReply",
+      "pos": [
+        520.0,
+        0.0
+      ],
+      "values": {
+        "mode": "taslak (e-posta programında onaylarsınız)",
+        "signature": "Saygılarımızla",
+        "folder": "onay_bekleyen",
+        "user": "",
+        "password": "",
+        "imap_host": "",
+        "smtp_host": "",
+        "smtp_port": 0
+      }
+    },
+    {
+      "id": "c2202cab",
+      "type": "ShowValue",
+      "pos": [
+        520.0,
+        150.0
+      ],
+      "values": {
+        "prefix": "Hazırlanan cevap: ",
+        "log": false
+      }
+    },
+    {
+      "id": "d98e6f3d",
+      "type": "ShowValue",
+      "pos": [
+        780.0,
+        75.0
+      ],
+      "values": {
+        "prefix": "Durum: ",
+        "log": false
+      }
+    },
+    {
+      "id": "1bd4f1fb",
+      "type": "Note",
+      "pos": [
+        0,
+        330
+      ],
+      "values": {
+        "text": "E-posta asistanı: yeni gelen her e-postaya Claude cevap yazar ve Taslaklar klasörüne koyar; siz kontrol edip gönderirsiniz. Bir cevap bitmeden sıradaki e-postaya geçilmez. Önce Araçlar → AI Merkezi → Ayarlar'da Claude anahtarını ve e-posta hesabınızı girin, Hafıza sekmesine şirket belgelerinizi (fiyat listesi, SSS) ekleyin."
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "bc1c6362",
+      "src_port": "mail",
+      "dst": "5611b5e1",
+      "dst_port": "prompt"
+    },
+    {
+      "src": "bc1c6362",
+      "src_port": "new",
+      "dst": "5611b5e1",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "5611b5e1",
+      "src_port": "done",
+      "dst": "470fe5fd",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "5611b5e1",
+      "src_port": "text",
+      "dst": "470fe5fd",
+      "dst_port": "body"
+    },
+    {
+      "src": "bc1c6362",
+      "src_port": "sender",
+      "dst": "470fe5fd",
+      "dst_port": "to"
+    },
+    {
+      "src": "bc1c6362",
+      "src_port": "subject",
+      "dst": "470fe5fd",
+      "dst_port": "subject"
+    },
+    {
+      "src": "bc1c6362",
+      "src_port": "message_id",
+      "dst": "470fe5fd",
+      "dst_port": "message_id"
+    },
+    {
+      "src": "5611b5e1",
+      "src_port": "text",
+      "dst": "c2202cab",
+      "dst_port": "value"
+    },
+    {
+      "src": "470fe5fd",
+      "src_port": "status",
+      "dst": "d98e6f3d",
+      "dst_port": "value"
+    },
+    {
+      "src": "470fe5fd",
+      "src_port": "done",
+      "dst": "bc1c6362",
+      "dst_port": "next"
+    }
+  ]
+}

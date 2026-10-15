@@ -1,0 +1,130 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "806a298c",
+      "type": "TestPattern",
+      "pos": [
+        0,
+        0
+      ],
+      "values": {
+        "width": 640,
+        "height": 480,
+        "animate": true,
+        "motion": "salınım"
+      }
+    },
+    {
+      "id": "e7af2814",
+      "type": "ColorRange",
+      "pos": [
+        240,
+        0
+      ],
+      "values": {
+        "h_min": 170,
+        "h_max": 10,
+        "s_min": 120,
+        "s_max": 255,
+        "v_min": 70,
+        "v_max": 255
+      }
+    },
+    {
+      "id": "a38ff65d",
+      "type": "FindContours",
+      "pos": [
+        480,
+        0
+      ],
+      "values": {
+        "min_area": 200,
+        "max_area": 0
+      }
+    },
+    {
+      "id": "140debde",
+      "type": "DrawDetections",
+      "pos": [
+        720,
+        0
+      ],
+      "values": {
+        "show_score": true,
+        "thickness": 2
+      }
+    },
+    {
+      "id": "3dd002b4",
+      "type": "WebPanel",
+      "pos": [
+        960,
+        0
+      ],
+      "values": {
+        "port": 8080,
+        "title": "VisionFlow Canlı",
+        "names": "Kırmızı nesne,Renk oranı %",
+        "quality": 75,
+        "max_width": 960
+      }
+    },
+    {
+      "id": "09c16206",
+      "type": "Note",
+      "pos": [
+        720,
+        300
+      ],
+      "values": {
+        "text": "Çalıştırın, tarayıcıda açın:\nhttp://localhost:8080\nAynı ağdaki telefondan da açılır."
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "806a298c",
+      "src_port": "image",
+      "dst": "e7af2814",
+      "dst_port": "image"
+    },
+    {
+      "src": "e7af2814",
+      "src_port": "mask",
+      "dst": "a38ff65d",
+      "dst_port": "mask"
+    },
+    {
+      "src": "806a298c",
+      "src_port": "image",
+      "dst": "140debde",
+      "dst_port": "image"
+    },
+    {
+      "src": "a38ff65d",
+      "src_port": "detections",
+      "dst": "140debde",
+      "dst_port": "detections"
+    },
+    {
+      "src": "140debde",
+      "src_port": "image",
+      "dst": "3dd002b4",
+      "dst_port": "image"
+    },
+    {
+      "src": "a38ff65d",
+      "src_port": "count",
+      "dst": "3dd002b4",
+      "dst_port": "a"
+    },
+    {
+      "src": "e7af2814",
+      "src_port": "ratio",
+      "dst": "3dd002b4",
+      "dst_port": "b"
+    }
+  ]
+}

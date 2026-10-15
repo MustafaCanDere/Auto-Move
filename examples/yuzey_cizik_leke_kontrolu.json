@@ -1,0 +1,194 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "kaynak",
+      "type": "ImageFolder",
+      "pos": [
+        0.0,
+        0.0
+      ],
+      "values": {
+        "folder": "examples/ornek_veri/sablonlar/yuzey",
+        "loop": true,
+        "delay": 0.6,
+        "recursive": false
+      }
+    },
+    {
+      "id": "yuzey",
+      "type": "SurfaceDefect",
+      "pos": [
+        280.0,
+        0.0
+      ],
+      "values": {
+        "roi": "20,20,440,320",
+        "method": "hepsi",
+        "sensitivity": 50,
+        "window": 15,
+        "min_area": 30
+      }
+    },
+    {
+      "id": "onizleme",
+      "type": "Preview",
+      "pos": [
+        600.0,
+        -120.0
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "karar",
+      "type": "ShowValue",
+      "pos": [
+        600.0,
+        60.0
+      ],
+      "values": {
+        "prefix": "Yüzey temiz: ",
+        "log": false
+      }
+    },
+    {
+      "id": "sayac",
+      "type": "ToleranceCheck",
+      "pos": [
+        600.0,
+        200.0
+      ],
+      "values": {
+        "low": 0.5,
+        "high": 1.5,
+        "nominal": 1.0,
+        "missing": "hatalı say"
+      }
+    },
+    {
+      "id": "plc",
+      "type": "ModbusWrite",
+      "pos": [
+        900.0,
+        60.0
+      ],
+      "values": {
+        "host": "192.168.0.10",
+        "port": 502,
+        "unit": 1,
+        "kind": "coil",
+        "address": 3
+      },
+      "disabled": true
+    }
+  ],
+  "connections": [
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "yuzey",
+      "dst_port": "image"
+    },
+    {
+      "src": "yuzey",
+      "src_port": "image",
+      "dst": "onizleme",
+      "dst_port": "image"
+    },
+    {
+      "src": "yuzey",
+      "src_port": "ok",
+      "dst": "karar",
+      "dst_port": "value"
+    },
+    {
+      "src": "yuzey",
+      "src_port": "ok",
+      "dst": "sayac",
+      "dst_port": "value"
+    },
+    {
+      "src": "yuzey",
+      "src_port": "ok",
+      "dst": "plc",
+      "dst_port": "value"
+    }
+  ],
+  "template": {
+    "title": "Yüzey çizik / leke kontrolü",
+    "categories": [
+      "Kalite kontrol",
+      "PLC"
+    ],
+    "description": "Sac, plastik veya boyalı yüzeyde çizik ve lekeleri bulur; temiz/kusurlu sayar ve isterseniz sonucu PLC'ye yazar.",
+    "questions": [
+      {
+        "id": "kaynak",
+        "label": "Görüntü kaynağı",
+        "kind": "source",
+        "default": "Örnek resimler",
+        "help": "Önce örnek resimlerle deneyin; sonra kameranızı seçin.",
+        "targets": [
+          {
+            "node": "kaynak"
+          }
+        ]
+      },
+      {
+        "id": "hassasiyet",
+        "label": "Hassasiyet (1-100)",
+        "kind": "int",
+        "default": 50,
+        "min": 1,
+        "max": 100,
+        "targets": [
+          {
+            "node": "yuzey",
+            "param": "sensitivity"
+          }
+        ]
+      },
+      {
+        "id": "alan",
+        "label": "En küçük kusur alanı (piksel)",
+        "kind": "int",
+        "default": 30,
+        "min": 1,
+        "max": 1000000,
+        "targets": [
+          {
+            "node": "yuzey",
+            "param": "min_area"
+          }
+        ]
+      },
+      {
+        "id": "plc",
+        "label": "Sonucu PLC'ye yaz (Modbus TCP)",
+        "kind": "bool",
+        "default": false,
+        "targets": [
+          {
+            "node": "plc",
+            "enabled": true
+          }
+        ]
+      },
+      {
+        "id": "plc_ip",
+        "label": "PLC IP adresi",
+        "kind": "str",
+        "default": "192.168.0.10",
+        "targets": [
+          {
+            "node": "plc",
+            "param": "host"
+          }
+        ]
+      }
+    ]
+  }
+}

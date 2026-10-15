@@ -1,0 +1,226 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "2520e9f7",
+      "type": "TestPattern",
+      "pos": [
+        0.0,
+        0.0
+      ],
+      "values": {
+        "width": 640,
+        "height": 480,
+        "animate": true,
+        "motion": "salınım"
+      }
+    },
+    {
+      "id": "33fb6e80",
+      "type": "DrawDetections",
+      "pos": [
+        980.0,
+        120.0
+      ],
+      "values": {
+        "show_score": true,
+        "thickness": 2
+      }
+    },
+    {
+      "id": "95e2ef2c",
+      "type": "Preview",
+      "pos": [
+        1220.0,
+        120.0
+      ],
+      "values": {
+        "overlay": "Kirmizi nesne"
+      }
+    },
+    {
+      "id": "7ff3bf5b",
+      "type": "ShowValue",
+      "pos": [
+        980.0,
+        380.0
+      ],
+      "values": {
+        "prefix": "Adet: ",
+        "log": false
+      }
+    },
+    {
+      "id": "d9ebe2f7",
+      "type": "SubFlow",
+      "pos": [
+        260.0,
+        0.0
+      ],
+      "values": {
+        "name": "Kırmızı nesneleri bul"
+      },
+      "inner": {
+        "format": "visionflow",
+        "version": 1,
+        "nodes": [
+          {
+            "id": "c58ff38b",
+            "type": "ColorRange",
+            "pos": [
+              260.0,
+              0.0
+            ],
+            "values": {
+              "h_min": 0,
+              "h_max": 10,
+              "s_min": 120,
+              "s_max": 255,
+              "v_min": 70,
+              "v_max": 255
+            }
+          },
+          {
+            "id": "46fac091",
+            "type": "Morphology",
+            "pos": [
+              500.0,
+              0.0
+            ],
+            "values": {
+              "op": "open",
+              "ksize": 5,
+              "iterations": 1
+            }
+          },
+          {
+            "id": "61359f53",
+            "type": "FindContours",
+            "pos": [
+              740.0,
+              0.0
+            ],
+            "values": {
+              "min_area": 200,
+              "max_area": 0
+            }
+          },
+          {
+            "id": "f25979b3",
+            "type": "SubflowInput",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "values": {
+              "name": "image",
+              "type": "Otomatik"
+            }
+          },
+          {
+            "id": "25d6a985",
+            "type": "SubflowOutput",
+            "pos": [
+              1000.0,
+              0.0
+            ],
+            "values": {
+              "name": "detections",
+              "type": "Otomatik"
+            }
+          },
+          {
+            "id": "2ef2e9a7",
+            "type": "SubflowOutput",
+            "pos": [
+              1000.0,
+              0.01
+            ],
+            "values": {
+              "name": "count",
+              "type": "Otomatik"
+            }
+          }
+        ],
+        "connections": [
+          {
+            "src": "c58ff38b",
+            "src_port": "mask",
+            "dst": "46fac091",
+            "dst_port": "image"
+          },
+          {
+            "src": "46fac091",
+            "src_port": "image",
+            "dst": "61359f53",
+            "dst_port": "mask"
+          },
+          {
+            "src": "f25979b3",
+            "src_port": "value",
+            "dst": "c58ff38b",
+            "dst_port": "image"
+          },
+          {
+            "src": "61359f53",
+            "src_port": "detections",
+            "dst": "25d6a985",
+            "dst_port": "value"
+          },
+          {
+            "src": "61359f53",
+            "src_port": "count",
+            "dst": "2ef2e9a7",
+            "dst_port": "value"
+          }
+        ]
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "2520e9f7",
+      "src_port": "image",
+      "dst": "33fb6e80",
+      "dst_port": "image"
+    },
+    {
+      "src": "33fb6e80",
+      "src_port": "image",
+      "dst": "95e2ef2c",
+      "dst_port": "image"
+    },
+    {
+      "src": "2520e9f7",
+      "src_port": "image",
+      "dst": "d9ebe2f7",
+      "dst_port": "image"
+    },
+    {
+      "src": "d9ebe2f7",
+      "src_port": "detections",
+      "dst": "33fb6e80",
+      "dst_port": "detections"
+    },
+    {
+      "src": "d9ebe2f7",
+      "src_port": "count",
+      "dst": "7ff3bf5b",
+      "dst_port": "value"
+    }
+  ],
+  "frames": [
+    {
+      "id": "c1",
+      "title": "Alt akış örneği\nKırmızı nesneleri bul bloğuna çift tıklayın: içinde renk filtresi, temizleme ve sayma var. Sağ tık → Alt akış kütüphanesine kaydet ile başka akışlarda kullanın.",
+      "rect": [
+        230.0,
+        -120.0,
+        520,
+        90
+      ],
+      "color": "#5a3d80"
+    }
+  ]
+}

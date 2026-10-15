@@ -1,0 +1,183 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "kaynak",
+      "type": "ImageFolder",
+      "pos": [
+        0.0,
+        0.0
+      ],
+      "values": {
+        "folder": "examples/ornek_veri/sablonlar/tarih",
+        "loop": true,
+        "delay": 1.0,
+        "recursive": false
+      }
+    },
+    {
+      "id": "ocr",
+      "type": "OCR",
+      "pos": [
+        280.0,
+        0.0
+      ],
+      "values": {
+        "lang": "eng",
+        "mode": "blok",
+        "whitelist": "",
+        "prep": "otsu",
+        "scale": 1.0,
+        "min_conf": 30,
+        "tesseract": ""
+      }
+    },
+    {
+      "id": "tarih",
+      "type": "DateCodeCheck",
+      "pos": [
+        560.0,
+        -60.0
+      ],
+      "values": {
+        "format": "otomatik",
+        "check": "geçmemiş olmalı (SKT)",
+        "keyword": "SKT",
+        "pick": "en geç tarih",
+        "min_days": 30,
+        "offset_days": 365,
+        "tolerance_days": 0,
+        "shift_start": "00:00",
+        "fix_ocr": true
+      }
+    },
+    {
+      "id": "metin",
+      "type": "TextFormat",
+      "pos": [
+        840.0,
+        -60.0
+      ],
+      "values": {
+        "template": "Tarih: {a}  Sonuç: {b}  ({c})"
+      }
+    },
+    {
+      "id": "karar",
+      "type": "ShowValue",
+      "pos": [
+        1100.0,
+        -60.0
+      ],
+      "values": {
+        "prefix": "",
+        "log": false
+      }
+    },
+    {
+      "id": "okunan",
+      "type": "ShowValue",
+      "pos": [
+        560.0,
+        140.0
+      ],
+      "values": {
+        "prefix": "Okunan: ",
+        "log": false
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "ocr",
+      "dst_port": "image"
+    },
+    {
+      "src": "ocr",
+      "src_port": "text",
+      "dst": "tarih",
+      "dst_port": "text"
+    },
+    {
+      "src": "ocr",
+      "src_port": "text",
+      "dst": "okunan",
+      "dst_port": "value"
+    },
+    {
+      "src": "tarih",
+      "src_port": "date",
+      "dst": "metin",
+      "dst_port": "a"
+    },
+    {
+      "src": "tarih",
+      "src_port": "ok",
+      "dst": "metin",
+      "dst_port": "b"
+    },
+    {
+      "src": "tarih",
+      "src_port": "reason",
+      "dst": "metin",
+      "dst_port": "c"
+    },
+    {
+      "src": "metin",
+      "src_port": "text",
+      "dst": "karar",
+      "dst_port": "value"
+    }
+  ],
+  "template": {
+    "title": "Tarih / lot kodu okuma",
+    "categories": [
+      "Kalite kontrol",
+      "Yapay zeka"
+    ],
+    "description": "Etiketteki son kullanma tarihini OCR ile okur ve kontrol eder (geçmiş mi, en az kaç gün var). Tesseract kurulu değilse OCR bloğu uyarı verir, akış yine açılır.",
+    "questions": [
+      {
+        "id": "kaynak",
+        "label": "Görüntü kaynağı",
+        "kind": "source",
+        "default": "Örnek resimler",
+        "help": "Önce örnek resimlerle deneyin; sonra kameranızı seçin.",
+        "targets": [
+          {
+            "node": "kaynak"
+          }
+        ]
+      },
+      {
+        "id": "anahtar",
+        "label": "Tarihten önceki yazı (ör. SKT, EXP)",
+        "kind": "str",
+        "default": "SKT",
+        "targets": [
+          {
+            "node": "tarih",
+            "param": "keyword"
+          }
+        ]
+      },
+      {
+        "id": "gun",
+        "label": "En az kaç gün kalmalı",
+        "kind": "int",
+        "default": 30,
+        "min": -36500,
+        "max": 36500,
+        "targets": [
+          {
+            "node": "tarih",
+            "param": "min_days"
+          }
+        ]
+      }
+    ]
+  }
+}

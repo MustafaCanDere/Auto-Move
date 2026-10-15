@@ -1,0 +1,136 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "kaynak",
+      "type": "TestPattern",
+      "pos": [0.0, 0.0],
+      "values": {
+        "pattern": "Lazer Çizgisi (Triangülasyon)",
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "id": "lazer",
+      "type": "LaserLine3DProfiler",
+      "pos": [280.0, 0.0],
+      "values": {
+        "triangulation_angle_deg": 45.0,
+        "scale_z_mm_per_px": 0.025,
+        "target_height_mm": 5.0,
+        "height_tolerance_mm": 0.4
+      }
+    },
+    {
+      "id": "sorter",
+      "type": "ConveyorBeltSorter",
+      "pos": [580.0, -90.0],
+      "values": {
+        "conveyor_speed_m_per_min": 30.0,
+        "sensor_to_ejector_dist_mm": 400.0,
+        "ejection_pulse_ms": 60.0
+      }
+    },
+    {
+      "id": "plc",
+      "type": "VirtualPLCSimulator",
+      "pos": [580.0, 110.0],
+      "values": {
+        "parts_per_minute": 30.0
+      }
+    },
+    {
+      "id": "onizleme",
+      "type": "Preview",
+      "pos": [880.0, 0.0],
+      "values": {
+        "overlay": ""
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "lazer",
+      "dst_port": "image"
+    },
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "sorter",
+      "dst_port": "image"
+    },
+    {
+      "src": "lazer",
+      "src_port": "is_in_spec",
+      "dst": "sorter",
+      "dst_port": "part_detected"
+    },
+    {
+      "src": "sorter",
+      "src_port": "ejector_blow_signal",
+      "dst": "plc",
+      "dst_port": "reject_cmd"
+    },
+    {
+      "src": "lazer",
+      "src_port": "heightmap_image",
+      "dst": "onizleme",
+      "dst_port": "image"
+    }
+  ],
+  "template": {
+    "title": "3D Lazer Profilometre + Yüksek Hızlı Pnömatik Ayıklama",
+    "categories": [
+      "Ölçüm",
+      "PLC",
+      "Kalite kontrol"
+    ],
+    "description": "3D lazer triangülasyonu ile parçanın Z yüksekliğini ve düzlemselliğini ölçer; tolerans dışı parçayı konveyör hızına göre hesaplayarak tam hava nozülü önünde hatta duraksama olmadan fırlatır.",
+    "questions": [
+      {
+        "id": "kaynak",
+        "label": "Görüntü kaynağı",
+        "kind": "source",
+        "default": "Örnek resimler",
+        "help": "Önce test deseniyle deneyin; sonra kameranızı seçin.",
+        "targets": [
+          {
+            "node": "kaynak"
+          }
+        ]
+      },
+      {
+        "id": "hedef_h",
+        "label": "Hedef Yükseklik (mm)",
+        "kind": "float",
+        "default": 5.0,
+        "min": 0.0,
+        "max": 100.0,
+        "targets": [
+          {
+            "node": "lazer",
+            "param": "target_height_mm"
+          }
+        ]
+      },
+      {
+        "id": "bant_hizi",
+        "label": "Konveyör Bant Hızı (m/dk)",
+        "kind": "float",
+        "default": 30.0,
+        "min": 1.0,
+        "max": 200.0,
+        "targets": [
+          {
+            "node": "sorter",
+            "param": "conveyor_speed_m_per_min"
+          }
+        ]
+      }
+    ]
+  }
+}

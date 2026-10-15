@@ -1,0 +1,125 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "6d92e2ef",
+      "type": "Camera",
+      "pos": [
+        0,
+        0
+      ],
+      "values": {
+        "source": "0",
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "id": "75e4d4c1",
+      "type": "MotionDetector",
+      "pos": [
+        240,
+        0
+      ],
+      "values": {
+        "sensitivity": 25,
+        "min_ratio": 0.5,
+        "history": 300
+      }
+    },
+    {
+      "id": "b9d7a366",
+      "type": "HoldPulse",
+      "pos": [
+        480,
+        200
+      ],
+      "values": {
+        "seconds": 5.0
+      }
+    },
+    {
+      "id": "ba6ab97a",
+      "type": "DrawText",
+      "pos": [
+        480,
+        0
+      ],
+      "values": {
+        "text": "Hareket: {a}",
+        "x": 10,
+        "y": 30,
+        "scale": 0.9,
+        "color": "beyaz"
+      }
+    },
+    {
+      "id": "2a0c2143",
+      "type": "Preview",
+      "pos": [
+        720,
+        0
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "0a9573db",
+      "type": "VideoRecorder",
+      "pos": [
+        720,
+        260
+      ],
+      "values": {
+        "folder": "videolar",
+        "fps": 20
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "6d92e2ef",
+      "src_port": "image",
+      "dst": "75e4d4c1",
+      "dst_port": "image"
+    },
+    {
+      "src": "75e4d4c1",
+      "src_port": "motion",
+      "dst": "b9d7a366",
+      "dst_port": "signal"
+    },
+    {
+      "src": "6d92e2ef",
+      "src_port": "image",
+      "dst": "ba6ab97a",
+      "dst_port": "image"
+    },
+    {
+      "src": "75e4d4c1",
+      "src_port": "motion",
+      "dst": "ba6ab97a",
+      "dst_port": "a"
+    },
+    {
+      "src": "ba6ab97a",
+      "src_port": "image",
+      "dst": "2a0c2143",
+      "dst_port": "image"
+    },
+    {
+      "src": "ba6ab97a",
+      "src_port": "image",
+      "dst": "0a9573db",
+      "dst_port": "image"
+    },
+    {
+      "src": "b9d7a366",
+      "src_port": "out",
+      "dst": "0a9573db",
+      "dst_port": "record"
+    }
+  ]
+}

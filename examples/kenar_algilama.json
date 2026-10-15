@@ -1,0 +1,89 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "6d7513b5",
+      "type": "TestPattern",
+      "pos": [
+        0,
+        0
+      ],
+      "values": {
+        "width": 640,
+        "height": 480,
+        "animate": true
+      }
+    },
+    {
+      "id": "85aedb0b",
+      "type": "Grayscale",
+      "pos": [
+        260,
+        0
+      ],
+      "values": {}
+    },
+    {
+      "id": "54823fac",
+      "type": "Blur",
+      "pos": [
+        500,
+        0
+      ],
+      "values": {
+        "mode": "gauss",
+        "ksize": 5
+      }
+    },
+    {
+      "id": "6a3b1e99",
+      "type": "Canny",
+      "pos": [
+        740,
+        0
+      ],
+      "values": {
+        "t1": 80,
+        "t2": 160
+      }
+    },
+    {
+      "id": "3d2ea763",
+      "type": "Preview",
+      "pos": [
+        980,
+        0
+      ],
+      "values": {
+        "overlay": ""
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "6d7513b5",
+      "src_port": "image",
+      "dst": "85aedb0b",
+      "dst_port": "image"
+    },
+    {
+      "src": "85aedb0b",
+      "src_port": "image",
+      "dst": "54823fac",
+      "dst_port": "image"
+    },
+    {
+      "src": "54823fac",
+      "src_port": "image",
+      "dst": "6a3b1e99",
+      "dst_port": "image"
+    },
+    {
+      "src": "6a3b1e99",
+      "src_port": "image",
+      "dst": "3d2ea763",
+      "dst_port": "image"
+    }
+  ]
+}

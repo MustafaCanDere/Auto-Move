@@ -1,0 +1,17 @@
+# İsteğe bağlı bloklar için ek paketler
+paho-mqtt>=2.0        # MQTT Gönder
+pyserial>=3.5         # Seri Port Gönder, PLC Oku/Yaz (Modbus RTU)
+pycomm3>=1.2          # Allen-Bradley Oku/Yaz
+pypylon>=2.0          # Endüstriyel Kamera: Basler
+harvesters>=1.4       # Endüstriyel Kamera: Hikrobot, Daheng, FLIR… (üreticinin .cti dosyasıyla)
+pyrealsense2>=2.54    # Derinlik Kamerası: Intel RealSense
+pyorbbecsdk>=2.0      # Derinlik Kamerası: Orbbec (Femto, Astra, Gemini)
+python-snap7>=2.0     # Siemens S7 Oku/Yaz
+asyncua>=1.1          # OPC UA Oku/Yaz
+pysoem>=1.1           # EtherCAT Oku/Yaz/Tara (Windows'ta Npcap, Linux'ta root/CAP_NET_RAW)
+scapy>=2.5            # Profinet Cihazlarını Bul — yalnız Windows/macOS (Npcap ile); Linux'ta gerekmez
+pytesseract>=0.3.10   # Yazı Oku (OCR) — ayrıca Tesseract programı kurulmalı
+# ultralytics          # YOLO eğitimi (PyTorch ile birlikte büyük bir indirme)
+pyttsx3>=2.98         # Seslendir: internetsiz bilgisayar sesi
+google-api-python-client>=2.100   # YouTube'a Yükle
+google-auth-oauthlib>=1.2         # YouTube'a Yükle (Google girişi)

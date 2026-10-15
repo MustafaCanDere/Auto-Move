@@ -1,0 +1,76 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "a1b2c3d1",
+      "type": "ImageFile",
+      "pos": [
+        0,
+        0
+      ],
+      "values": {
+        "path": "examples/ornek_veri/tepsi.png"
+      }
+    },
+    {
+      "id": "a1b2c3d2",
+      "type": "GridInspect",
+      "pos": [
+        260,
+        0
+      ],
+      "values": {
+        "roi": "20,30,240,180",
+        "rows": 3,
+        "cols": 4,
+        "method": "dolu = koyu",
+        "threshold": 200,
+        "margin": 15.0
+      }
+    },
+    {
+      "id": "a1b2c3d3",
+      "type": "Preview",
+      "pos": [
+        560,
+        -80
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "a1b2c3d4",
+      "type": "ShowValue",
+      "pos": [
+        560,
+        120
+      ],
+      "values": {
+        "prefix": "Boş hücreler: ",
+        "log": false
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "a1b2c3d1",
+      "src_port": "image",
+      "dst": "a1b2c3d2",
+      "dst_port": "image"
+    },
+    {
+      "src": "a1b2c3d2",
+      "src_port": "image",
+      "dst": "a1b2c3d3",
+      "dst_port": "image"
+    },
+    {
+      "src": "a1b2c3d2",
+      "src_port": "empty_cells",
+      "dst": "a1b2c3d4",
+      "dst_port": "value"
+    }
+  ]
+}

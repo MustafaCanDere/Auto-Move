@@ -1,0 +1,135 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "e693df60",
+      "type": "ImageFile",
+      "pos": [
+        0,
+        0
+      ],
+      "values": {
+        "path": "examples/ornek_veri/test_hatali.png"
+      }
+    },
+    {
+      "id": "474d6b9d",
+      "type": "PatchCore",
+      "pos": [
+        240,
+        0
+      ],
+      "values": {
+        "folder": "examples/ornek_veri/saglam",
+        "backbone": "Yerleşik (hızlı, internetsiz)",
+        "onnx": "",
+        "sensitivity": 1.0,
+        "min_area": 30,
+        "size": 256,
+        "coreset": 10.0
+      }
+    },
+    {
+      "id": "d4e12fd9",
+      "type": "DrawDetections",
+      "pos": [
+        480,
+        0
+      ],
+      "values": {
+        "show_score": true,
+        "thickness": 2
+      }
+    },
+    {
+      "id": "76d18627",
+      "type": "Preview",
+      "pos": [
+        720,
+        0
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "42f3f96f",
+      "type": "TextFormat",
+      "pos": [
+        480,
+        320
+      ],
+      "values": {
+        "template": "Sonuç: {a}  skor: {b}"
+      }
+    },
+    {
+      "id": "a1f73e29",
+      "type": "ShowValue",
+      "pos": [
+        720,
+        320
+      ],
+      "values": {
+        "prefix": "",
+        "log": false
+      }
+    },
+    {
+      "id": "eba46f30",
+      "type": "Note",
+      "pos": [
+        0,
+        260
+      ],
+      "values": {
+        "text": "Derin Anomali (PatchCore): sadece SAĞLAM örneklerle öğrenir,\nalarm sınırını kendisi belirler (skor > 1 = hatalı).\nResim dosyasını test_saglam.png yapıp farkı görün.\nDaha hassas sonuç için Öznitelikler: ResNet18."
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "e693df60",
+      "src_port": "image",
+      "dst": "474d6b9d",
+      "dst_port": "image"
+    },
+    {
+      "src": "e693df60",
+      "src_port": "image",
+      "dst": "d4e12fd9",
+      "dst_port": "image"
+    },
+    {
+      "src": "474d6b9d",
+      "src_port": "detections",
+      "dst": "d4e12fd9",
+      "dst_port": "detections"
+    },
+    {
+      "src": "d4e12fd9",
+      "src_port": "image",
+      "dst": "76d18627",
+      "dst_port": "image"
+    },
+    {
+      "src": "474d6b9d",
+      "src_port": "ok",
+      "dst": "42f3f96f",
+      "dst_port": "a"
+    },
+    {
+      "src": "474d6b9d",
+      "src_port": "score",
+      "dst": "42f3f96f",
+      "dst_port": "b"
+    },
+    {
+      "src": "42f3f96f",
+      "src_port": "text",
+      "dst": "a1f73e29",
+      "dst_port": "value"
+    }
+  ]
+}

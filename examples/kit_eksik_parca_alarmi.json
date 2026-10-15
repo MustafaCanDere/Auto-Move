@@ -1,0 +1,265 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "kaynak",
+      "type": "ImageFolder",
+      "pos": [
+        0.0,
+        0.0
+      ],
+      "values": {
+        "folder": "examples/ornek_veri/sablonlar/kit",
+        "loop": true,
+        "delay": 0.6,
+        "recursive": false
+      }
+    },
+    {
+      "id": "esik",
+      "type": "Threshold",
+      "pos": [
+        260.0,
+        0.0
+      ],
+      "values": {
+        "mode": "binary",
+        "value": 120
+      }
+    },
+    {
+      "id": "kontur",
+      "type": "FindContours",
+      "pos": [
+        500.0,
+        0.0
+      ],
+      "values": {
+        "min_area": 300,
+        "max_area": 0
+      }
+    },
+    {
+      "id": "sekil",
+      "type": "ShapeDetector",
+      "pos": [
+        740.0,
+        0.0
+      ],
+      "values": {
+        "only": "hepsi"
+      }
+    },
+    {
+      "id": "karsilastir",
+      "type": "CountCompare",
+      "pos": [
+        980.0,
+        0.0
+      ],
+      "values": {
+        "spec": "4 daire, 2 altıgen",
+        "mode": "tam eşit olmalı",
+        "others": false
+      }
+    },
+    {
+      "id": "ciz",
+      "type": "DrawDetections",
+      "pos": [
+        980.0,
+        -180.0
+      ],
+      "values": {
+        "show_score": false,
+        "thickness": 2
+      }
+    },
+    {
+      "id": "onizleme",
+      "type": "Preview",
+      "pos": [
+        1220.0,
+        -180.0
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "eksik",
+      "type": "ShowValue",
+      "pos": [
+        1220.0,
+        0.0
+      ],
+      "values": {
+        "prefix": "Kit: ",
+        "log": false
+      }
+    },
+    {
+      "id": "alarm",
+      "type": "Logic",
+      "pos": [
+        1220.0,
+        160.0
+      ],
+      "values": {
+        "op": "not a"
+      }
+    },
+    {
+      "id": "plc",
+      "type": "ModbusWrite",
+      "pos": [
+        1460.0,
+        160.0
+      ],
+      "values": {
+        "host": "192.168.0.10",
+        "port": 502,
+        "unit": 1,
+        "kind": "coil",
+        "address": 2
+      },
+      "disabled": true
+    }
+  ],
+  "connections": [
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "esik",
+      "dst_port": "image"
+    },
+    {
+      "src": "esik",
+      "src_port": "image",
+      "dst": "kontur",
+      "dst_port": "mask"
+    },
+    {
+      "src": "kontur",
+      "src_port": "contours",
+      "dst": "sekil",
+      "dst_port": "contours"
+    },
+    {
+      "src": "sekil",
+      "src_port": "detections",
+      "dst": "karsilastir",
+      "dst_port": "detections"
+    },
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "ciz",
+      "dst_port": "image"
+    },
+    {
+      "src": "sekil",
+      "src_port": "detections",
+      "dst": "ciz",
+      "dst_port": "detections"
+    },
+    {
+      "src": "ciz",
+      "src_port": "image",
+      "dst": "onizleme",
+      "dst_port": "image"
+    },
+    {
+      "src": "karsilastir",
+      "src_port": "missing",
+      "dst": "eksik",
+      "dst_port": "value"
+    },
+    {
+      "src": "karsilastir",
+      "src_port": "ok",
+      "dst": "alarm",
+      "dst_port": "a"
+    },
+    {
+      "src": "alarm",
+      "src_port": "result",
+      "dst": "plc",
+      "dst_port": "value"
+    }
+  ],
+  "template": {
+    "title": "Parça sayma ve eksik parça alarmı",
+    "categories": [
+      "Sayma",
+      "Kalite kontrol",
+      "PLC"
+    ],
+    "description": "Tepsideki parçaları şekline göre sayar (daire = pul, altıgen = somun) ve beklenen adetle karşılaştırır; eksik/fazla parçayı yazar, isterseniz PLC'ye alarm biti gönderir.",
+    "questions": [
+      {
+        "id": "kaynak",
+        "label": "Görüntü kaynağı",
+        "kind": "source",
+        "default": "Örnek resimler",
+        "help": "Önce örnek resimlerle deneyin; sonra kameranızı seçin.",
+        "targets": [
+          {
+            "node": "kaynak"
+          }
+        ]
+      },
+      {
+        "id": "beklenen",
+        "label": "Beklenen parçalar (ör. 4 daire, 2 altıgen)",
+        "kind": "str",
+        "default": "4 daire, 2 altıgen",
+        "targets": [
+          {
+            "node": "karsilastir",
+            "param": "spec"
+          }
+        ]
+      },
+      {
+        "id": "esik",
+        "label": "Parça/zemin parlaklık eşiği",
+        "kind": "int",
+        "default": 120,
+        "min": 0,
+        "max": 255,
+        "targets": [
+          {
+            "node": "esik",
+            "param": "value"
+          }
+        ]
+      },
+      {
+        "id": "plc",
+        "label": "Sonucu PLC'ye yaz (Modbus TCP)",
+        "kind": "bool",
+        "default": false,
+        "targets": [
+          {
+            "node": "plc",
+            "enabled": true
+          }
+        ]
+      },
+      {
+        "id": "plc_ip",
+        "label": "PLC IP adresi",
+        "kind": "str",
+        "default": "192.168.0.10",
+        "targets": [
+          {
+            "node": "plc",
+            "param": "host"
+          }
+        ]
+      }
+    ]
+  }
+}

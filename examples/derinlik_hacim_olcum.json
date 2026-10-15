@@ -1,0 +1,457 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "sahne",
+      "type": "DepthTestScene",
+      "pos": [
+        0,
+        0
+      ],
+      "values": {
+        "scene": "tek kutu",
+        "width": 640,
+        "height": 480,
+        "distance": 800.0,
+        "tilt_x": 0.0,
+        "tilt_y": 0.0,
+        "noise": 0.3,
+        "dropout": 0.01,
+        "vary": 3.0,
+        "animate": true,
+        "seed": 0
+      }
+    },
+    {
+      "id": "filtre",
+      "type": "DepthFilter",
+      "pos": [
+        260,
+        0
+      ],
+      "values": {
+        "near": 0.0,
+        "far": 0.0,
+        "smooth": "medyan 3",
+        "sigma": 15.0,
+        "fill": 50
+      }
+    },
+    {
+      "id": "zemin",
+      "type": "FindGroundPlane",
+      "pos": [
+        520,
+        0
+      ],
+      "values": {
+        "roi": "",
+        "threshold": 3.0,
+        "iterations": 200,
+        "mode": "her karede"
+      }
+    },
+    {
+      "id": "nesne",
+      "type": "Find3DObjects",
+      "pos": [
+        780,
+        -160
+      ],
+      "values": {
+        "roi": "",
+        "min_height": 5.0,
+        "max_height": 0.0,
+        "min_area": 200.0,
+        "percentile": 95.0,
+        "label": "kutu",
+        "clean": 1
+      }
+    },
+    {
+      "id": "hacim",
+      "type": "MeasureVolume",
+      "pos": [
+        780,
+        140
+      ],
+      "values": {
+        "roi": "",
+        "min_height": 2.0
+      }
+    },
+    {
+      "id": "yukseklik_tol",
+      "type": "ToleranceCheck",
+      "pos": [
+        1040,
+        -160
+      ],
+      "values": {
+        "low": 38.0,
+        "high": 42.0,
+        "nominal": 40.0,
+        "missing": "hatalı say"
+      }
+    },
+    {
+      "id": "hacim_tol",
+      "type": "ToleranceCheck",
+      "pos": [
+        1040,
+        140
+      ],
+      "values": {
+        "low": 271.6,
+        "high": 288.4,
+        "nominal": 280.0,
+        "missing": "hatalı say"
+      }
+    },
+    {
+      "id": "sonuc_ve",
+      "type": "Logic",
+      "pos": [
+        1300,
+        0
+      ],
+      "values": {
+        "op": "and"
+      }
+    },
+    {
+      "id": "sonuc",
+      "type": "TextFormat",
+      "pos": [
+        1300,
+        160
+      ],
+      "values": {
+        "template": "Yükseklik {a} mm · Hacim {b} cm³ · Sağlam: {c}"
+      }
+    },
+    {
+      "id": "goster",
+      "type": "ShowValue",
+      "pos": [
+        1560,
+        160
+      ],
+      "values": {
+        "prefix": "",
+        "log": false
+      }
+    },
+    {
+      "id": "onizleme",
+      "type": "Preview",
+      "pos": [
+        1040,
+        -400
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "renk",
+      "type": "ColorizeDepth",
+      "pos": [
+        260,
+        -240
+      ],
+      "values": {
+        "vmin": 0.0,
+        "vmax": 0.0,
+        "cmap": "Turbo",
+        "near_warm": true,
+        "legend": true
+      }
+    },
+    {
+      "id": "derinlik_onizleme",
+      "type": "Preview",
+      "pos": [
+        520,
+        -240
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "bulut",
+      "type": "PointCloudView",
+      "pos": [
+        780,
+        -420
+      ],
+      "values": {
+        "yaw": -30.0,
+        "pitch": 35.0,
+        "zoom": 1.0,
+        "color": "yükseklik",
+        "width": 640,
+        "height": 480,
+        "point_size": 2,
+        "max_points": 60000
+      }
+    },
+    {
+      "id": "not",
+      "type": "Note",
+      "pos": [
+        0,
+        -240
+      ],
+      "values": {
+        "text": "Derinlik Test Sahnesi yerine gerçek kamera için Derinlik Kamerası bloğunu koyun\n(Intel RealSense / Orbbec / Dosyadan). Kamera zemine bakmalı; Zemin Düzlemi Bul\nbölgesini boş zemine çizmek en sağlamıdır."
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "sahne",
+      "src_port": "depth",
+      "dst": "filtre",
+      "dst_port": "depth"
+    },
+    {
+      "src": "filtre",
+      "src_port": "depth",
+      "dst": "zemin",
+      "dst_port": "depth"
+    },
+    {
+      "src": "sahne",
+      "src_port": "intrinsics",
+      "dst": "zemin",
+      "dst_port": "intrinsics"
+    },
+    {
+      "src": "filtre",
+      "src_port": "depth",
+      "dst": "nesne",
+      "dst_port": "depth"
+    },
+    {
+      "src": "sahne",
+      "src_port": "intrinsics",
+      "dst": "nesne",
+      "dst_port": "intrinsics"
+    },
+    {
+      "src": "filtre",
+      "src_port": "depth",
+      "dst": "hacim",
+      "dst_port": "depth"
+    },
+    {
+      "src": "sahne",
+      "src_port": "intrinsics",
+      "dst": "hacim",
+      "dst_port": "intrinsics"
+    },
+    {
+      "src": "filtre",
+      "src_port": "depth",
+      "dst": "bulut",
+      "dst_port": "depth"
+    },
+    {
+      "src": "sahne",
+      "src_port": "intrinsics",
+      "dst": "bulut",
+      "dst_port": "intrinsics"
+    },
+    {
+      "src": "zemin",
+      "src_port": "plane",
+      "dst": "nesne",
+      "dst_port": "plane"
+    },
+    {
+      "src": "zemin",
+      "src_port": "plane",
+      "dst": "hacim",
+      "dst_port": "plane"
+    },
+    {
+      "src": "zemin",
+      "src_port": "plane",
+      "dst": "bulut",
+      "dst_port": "plane"
+    },
+    {
+      "src": "sahne",
+      "src_port": "image",
+      "dst": "nesne",
+      "dst_port": "image"
+    },
+    {
+      "src": "sahne",
+      "src_port": "image",
+      "dst": "bulut",
+      "dst_port": "image"
+    },
+    {
+      "src": "nesne",
+      "src_port": "image",
+      "dst": "onizleme",
+      "dst_port": "image"
+    },
+    {
+      "src": "nesne",
+      "src_port": "max_height",
+      "dst": "yukseklik_tol",
+      "dst_port": "value"
+    },
+    {
+      "src": "hacim",
+      "src_port": "volume",
+      "dst": "hacim_tol",
+      "dst_port": "value"
+    },
+    {
+      "src": "yukseklik_tol",
+      "src_port": "ok",
+      "dst": "sonuc_ve",
+      "dst_port": "a"
+    },
+    {
+      "src": "hacim_tol",
+      "src_port": "ok",
+      "dst": "sonuc_ve",
+      "dst_port": "b"
+    },
+    {
+      "src": "nesne",
+      "src_port": "max_height",
+      "dst": "sonuc",
+      "dst_port": "a"
+    },
+    {
+      "src": "hacim",
+      "src_port": "volume",
+      "dst": "sonuc",
+      "dst_port": "b"
+    },
+    {
+      "src": "sonuc_ve",
+      "src_port": "result",
+      "dst": "sonuc",
+      "dst_port": "c"
+    },
+    {
+      "src": "sonuc",
+      "src_port": "text",
+      "dst": "goster",
+      "dst_port": "value"
+    },
+    {
+      "src": "sahne",
+      "src_port": "depth",
+      "dst": "renk",
+      "dst_port": "depth"
+    },
+    {
+      "src": "renk",
+      "src_port": "image",
+      "dst": "derinlik_onizleme",
+      "dst_port": "image"
+    }
+  ],
+  "template": {
+    "title": "Derinlik kamerasıyla yükseklik ve hacim ölçümü",
+    "categories": [
+      "Ölçüm",
+      "Kalite kontrol"
+    ],
+    "description": "3B derinlik görüntüsünde zemin düzlemini bulur, kutunun zeminden yüksekliğini (mm) ve hacmini (cm³) ölçer, ikisini de tolerans içinde mi diye kontrol eder. Kamera olmadan yapay derinlik sahnesiyle çalışır; gerçek RealSense / Orbbec kamera için kaynak bloğunu Derinlik Kamerası ile değiştirin.",
+    "questions": [
+      {
+        "id": "yukseklik",
+        "label": "Nominal yükseklik (mm)",
+        "kind": "float",
+        "default": 40,
+        "min": 0,
+        "max": 10000,
+        "targets": [
+          {
+            "node": "yukseklik_tol",
+            "param": "nominal"
+          }
+        ]
+      },
+      {
+        "id": "tol",
+        "label": "Yükseklik toleransı ± (mm)",
+        "kind": "float",
+        "default": 2,
+        "min": 0,
+        "max": 1000,
+        "targets": [
+          {
+            "node": "yukseklik_tol",
+            "param": "low",
+            "expr": "yukseklik - tol"
+          },
+          {
+            "node": "yukseklik_tol",
+            "param": "high",
+            "expr": "yukseklik + tol"
+          }
+        ]
+      },
+      {
+        "id": "hacim",
+        "label": "Nominal hacim (cm³)",
+        "kind": "float",
+        "default": 280,
+        "min": 0,
+        "max": 1000000,
+        "targets": [
+          {
+            "node": "hacim_tol",
+            "param": "nominal"
+          }
+        ]
+      },
+      {
+        "id": "hacim_tol",
+        "label": "Hacim toleransı ± (%)",
+        "kind": "float",
+        "default": 3,
+        "min": 0,
+        "max": 100,
+        "targets": [
+          {
+            "node": "hacim_tol",
+            "param": "low",
+            "expr": "hacim - hacim * hacim_tol / 100"
+          },
+          {
+            "node": "hacim_tol",
+            "param": "high",
+            "expr": "hacim + hacim * hacim_tol / 100"
+          }
+        ]
+      },
+      {
+        "id": "degisim",
+        "label": "Deneme: kutu yüksekliği her parçada ± kaç mm oynasın",
+        "kind": "float",
+        "default": 3,
+        "min": 0,
+        "max": 100,
+        "targets": [
+          {
+            "node": "sahne",
+            "param": "vary"
+          }
+        ]
+      }
+    ]
+  }
+}

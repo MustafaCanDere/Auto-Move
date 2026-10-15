@@ -1,0 +1,210 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "b77a12c1",
+      "type": "ImageFolder",
+      "pos": [
+        0,
+        0
+      ],
+      "values": {
+        "folder": "examples/ornek_veri/parcalar",
+        "loop": true,
+        "delay": 1.5,
+        "recursive": false
+      }
+    },
+    {
+      "id": "bad7747e",
+      "type": "Threshold",
+      "pos": [
+        260,
+        0
+      ],
+      "values": {
+        "mode": "binary",
+        "value": 90
+      }
+    },
+    {
+      "id": "670d1e78",
+      "type": "FindContours",
+      "pos": [
+        520,
+        0
+      ],
+      "values": {
+        "min_area": 800,
+        "max_area": 0
+      }
+    },
+    {
+      "id": "3fa7b6ae",
+      "type": "ShapeDetector",
+      "pos": [
+        780,
+        0
+      ],
+      "values": {
+        "only": "hepsi"
+      }
+    },
+    {
+      "id": "cc12dc90",
+      "type": "DrawDetections",
+      "pos": [
+        1040,
+        0
+      ],
+      "values": {
+        "show_score": false,
+        "thickness": 2
+      }
+    },
+    {
+      "id": "8e4457d9",
+      "type": "Preview",
+      "pos": [
+        1300,
+        0
+      ],
+      "values": {
+        "overlay": ""
+      }
+    },
+    {
+      "id": "025c2e1d",
+      "type": "CountByLabel",
+      "pos": [
+        1040,
+        260
+      ],
+      "values": {
+        "labels": "daire,kare,üçgen"
+      }
+    },
+    {
+      "id": "b0f560aa",
+      "type": "ShowValue",
+      "pos": [
+        1300,
+        260
+      ],
+      "values": {
+        "prefix": "Şekiller: ",
+        "log": false
+      }
+    },
+    {
+      "id": "6b406520",
+      "type": "Chart",
+      "pos": [
+        1300,
+        420
+      ],
+      "values": {
+        "points": 60,
+        "width": 480,
+        "height": 220,
+        "title": "daire / kare",
+        "names": "daire,kare"
+      }
+    },
+    {
+      "id": "78ba6b86",
+      "type": "HoughCircles",
+      "pos": [
+        260,
+        300
+      ],
+      "values": {
+        "min_r": 25,
+        "max_r": 60,
+        "min_dist": 60,
+        "roundness": 0.8,
+        "edge": 200
+      }
+    },
+    {
+      "id": "999b6e83",
+      "type": "Note",
+      "pos": [
+        0,
+        300
+      ],
+      "values": {
+        "text": "Klasördeki her resimde şekilleri tanır ve sınıfına göre sayar. Alttaki dal Hough ile daireleri bulup çaplarını yazar. Kendi klasörünüzü Klasördeki Resimler bloğunda seçin."
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "b77a12c1",
+      "src_port": "image",
+      "dst": "bad7747e",
+      "dst_port": "image"
+    },
+    {
+      "src": "bad7747e",
+      "src_port": "image",
+      "dst": "670d1e78",
+      "dst_port": "mask"
+    },
+    {
+      "src": "670d1e78",
+      "src_port": "contours",
+      "dst": "3fa7b6ae",
+      "dst_port": "contours"
+    },
+    {
+      "src": "b77a12c1",
+      "src_port": "image",
+      "dst": "cc12dc90",
+      "dst_port": "image"
+    },
+    {
+      "src": "3fa7b6ae",
+      "src_port": "detections",
+      "dst": "cc12dc90",
+      "dst_port": "detections"
+    },
+    {
+      "src": "cc12dc90",
+      "src_port": "image",
+      "dst": "8e4457d9",
+      "dst_port": "image"
+    },
+    {
+      "src": "3fa7b6ae",
+      "src_port": "detections",
+      "dst": "025c2e1d",
+      "dst_port": "detections"
+    },
+    {
+      "src": "025c2e1d",
+      "src_port": "summary",
+      "dst": "b0f560aa",
+      "dst_port": "value"
+    },
+    {
+      "src": "025c2e1d",
+      "src_port": "a",
+      "dst": "6b406520",
+      "dst_port": "a"
+    },
+    {
+      "src": "025c2e1d",
+      "src_port": "b",
+      "dst": "6b406520",
+      "dst_port": "b"
+    },
+    {
+      "src": "b77a12c1",
+      "src_port": "image",
+      "dst": "78ba6b86",
+      "dst_port": "image"
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "a57a5d6c",
+      "type": "TelegramReceive",
+      "pos": [
+        0.0,
+        75.0
+      ],
+      "values": {
+        "token": "",
+        "allowed": "",
+        "interval": 3.0,
+        "api": "https://api.telegram.org"
+      }
+    },
+    {
+      "id": "c1b7ee1e",
+      "type": "AskAI",
+      "pos": [
+        260.0,
+        75.0
+      ],
+      "values": {
+        "template": "Telegram'dan gelen mesaja kısa ve yardımcı bir Türkçe cevap ver.\n\n{prompt}",
+        "system": "",
+        "use_memory": true,
+        "chat_memory": true,
+        "session": "telegram",
+        "effort": "medium",
+        "max_tokens": 3000
+      }
+    },
+    {
+      "id": "db778922",
+      "type": "TelegramSend",
+      "pos": [
+        520.0,
+        0.0
+      ],
+      "values": {
+        "token": "",
+        "chat_id": "",
+        "text": "{v}",
+        "cooldown": 0,
+        "api": "https://api.telegram.org"
+      }
+    },
+    {
+      "id": "9965b344",
+      "type": "ShowValue",
+      "pos": [
+        520.0,
+        150.0
+      ],
+      "values": {
+        "prefix": "Son cevap: ",
+        "log": false
+      }
+    },
+    {
+      "id": "d013e383",
+      "type": "Note",
+      "pos": [
+        0,
+        330
+      ],
+      "values": {
+        "text": "Telegram asistanı: botunuza yazılan mesajlara Claude cevap verir. AI Merkezi → Ayarlar'da bot token'ını ve izinli chat ID'leri girin; izinsiz kişilerden gelen mesajlar yok sayılır ve kayıtta chat ID'leri görünür. Hafıza sekmesindeki belgeler cevaplarda kullanılır."
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "a57a5d6c",
+      "src_port": "text",
+      "dst": "c1b7ee1e",
+      "dst_port": "prompt"
+    },
+    {
+      "src": "a57a5d6c",
+      "src_port": "new",
+      "dst": "c1b7ee1e",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "c1b7ee1e",
+      "src_port": "text",
+      "dst": "db778922",
+      "dst_port": "value"
+    },
+    {
+      "src": "c1b7ee1e",
+      "src_port": "done",
+      "dst": "db778922",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "a57a5d6c",
+      "src_port": "chat_id",
+      "dst": "db778922",
+      "dst_port": "chat_id"
+    },
+    {
+      "src": "c1b7ee1e",
+      "src_port": "done",
+      "dst": "a57a5d6c",
+      "dst_port": "next"
+    },
+    {
+      "src": "c1b7ee1e",
+      "src_port": "text",
+      "dst": "9965b344",
+      "dst_port": "value"
+    }
+  ]
+}

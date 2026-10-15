@@ -1,0 +1,128 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "kaynak",
+      "type": "TestPattern",
+      "pos": [0.0, 0.0],
+      "values": {
+        "pattern": "Izgara (Grid)",
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "id": "vlm",
+      "type": "VisualInspectorAI",
+      "pos": [300.0, 0.0],
+      "values": {
+        "provider": "Yerel Ollama (LLaVA / Moondream)",
+        "model": "llava",
+        "prompt": "Bu parçada montaj hatası, çatlak, eksik bileşen veya yüzey kusuru var mı? İncele ve açıkla. Son satıra SONUC: OK veya SONUC: NOK yaz."
+      }
+    },
+    {
+      "id": "kara_kutu",
+      "type": "BlackBoxRecorder",
+      "pos": [620.0, -100.0],
+      "values": {
+        "pre_trigger_sec": 3.0,
+        "post_trigger_sec": 3.0,
+        "fps": 15.0,
+        "output_folder": "kara_kutu_kayitlari"
+      }
+    },
+    {
+      "id": "etiket",
+      "type": "ZebraLabelPrinter",
+      "pos": [620.0, 100.0],
+      "values": {
+        "company_header": "REDDEDILEN PARCA (NOK)",
+        "printer_ip": "192.168.1.200",
+        "printer_port": 9100
+      }
+    },
+    {
+      "id": "onizleme",
+      "type": "Preview",
+      "pos": [920.0, 0.0],
+      "values": {
+        "overlay": ""
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "vlm",
+      "dst_port": "image"
+    },
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "kara_kutu",
+      "dst_port": "image"
+    },
+    {
+      "src": "vlm",
+      "src_port": "is_defect",
+      "dst": "kara_kutu",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "vlm",
+      "src_port": "is_defect",
+      "dst": "etiket",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "onizleme",
+      "dst_port": "image"
+    }
+  ],
+  "template": {
+    "title": "Yapay Zeka (VLM) Denetim + Kara Kutu Video Kaydı",
+    "categories": [
+      "Yapay zeka",
+      "Kalite kontrol",
+      "Otomasyon"
+    ],
+    "description": "Büyük Çok Modlu Yapay Zeka (VLM) ile parça kusurlarını inceler; hata tespit edildiğinde Kara Kutu (BlackBox) dairesel tamponundan olayın 5 saniye öncesini ve sonrasını MP4 video olarak kaydeder.",
+    "questions": [
+      {
+        "id": "kaynak",
+        "label": "Görüntü kaynağı",
+        "kind": "source",
+        "default": "Örnek resimler",
+        "help": "Önce test deseniyle deneyin; sonra kameranızı seçin.",
+        "targets": [
+          {
+            "node": "kaynak"
+          }
+        ]
+      },
+      {
+        "id": "provider",
+        "label": "Yapay Zeka Modeli",
+        "kind": "choice",
+        "default": "Yerel Ollama (LLaVA / Moondream)",
+        "choices": [
+          "Yerel Ollama (LLaVA / Moondream)",
+          "Claude (Anthropic)",
+          "OpenAI GPT-4o",
+          "Google Gemini"
+        ],
+        "targets": [
+          {
+            "node": "vlm",
+            "param": "provider"
+          }
+        ]
+      }
+    ]
+  }
+}

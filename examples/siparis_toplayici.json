@@ -1,0 +1,146 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "99cfc892",
+      "type": "WebhookReceive",
+      "pos": [
+        0.0,
+        150.0
+      ],
+      "values": {
+        "port": 8765,
+        "listen": "sadece bu bilgisayar",
+        "token": ""
+      }
+    },
+    {
+      "id": "a2221fd7",
+      "type": "ExtractInfo",
+      "pos": [
+        260.0,
+        150.0
+      ],
+      "values": {
+        "fields": "müşteri,ürün,adet",
+        "hint": "Web formundan veya mesajdan gelen sipariş"
+      }
+    },
+    {
+      "id": "27417e55",
+      "type": "ExcelLogger",
+      "pos": [
+        520.0,
+        0.0
+      ],
+      "values": {
+        "path": "siparisler.xlsx",
+        "sheet": "Siparişler",
+        "names": "müşteri,ürün,adet"
+      }
+    },
+    {
+      "id": "0760d78f",
+      "type": "SetVariable",
+      "pos": [
+        520.0,
+        150.0
+      ],
+      "values": {
+        "name": "bugunku_siparis",
+        "mode": "ekle",
+        "initial": "0",
+        "persist": true
+      }
+    },
+    {
+      "id": "ca559395",
+      "type": "TelegramSend",
+      "pos": [
+        520.0,
+        300.0
+      ],
+      "values": {
+        "token": "",
+        "chat_id": "",
+        "text": "🛒 Yeni sipariş: {v}",
+        "cooldown": 0,
+        "api": "https://api.telegram.org"
+      }
+    },
+    {
+      "id": "dd42af45",
+      "type": "Note",
+      "pos": [
+        0,
+        330
+      ],
+      "values": {
+        "text": "Sipariş toplayıcı: web formunuz, Zapier/Make veya başka bir program http://localhost:8765/ adresine sipariş gönderir; Claude müşteri, ürün ve adedi çıkarır, siparisler.xlsx dosyasına yazar, sayacı artırır ve Telegram'a haber verir. Ağdan erişim için bloğu 'yerel ağ' yapıp token girin. Deneme: curl -d \"Ali Kaya 3 adet vida istiyor\" http://localhost:8765/"
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "99cfc892",
+      "src_port": "text",
+      "dst": "a2221fd7",
+      "dst_port": "text"
+    },
+    {
+      "src": "99cfc892",
+      "src_port": "new",
+      "dst": "a2221fd7",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "a2221fd7",
+      "src_port": "a",
+      "dst": "27417e55",
+      "dst_port": "a"
+    },
+    {
+      "src": "a2221fd7",
+      "src_port": "b",
+      "dst": "27417e55",
+      "dst_port": "b"
+    },
+    {
+      "src": "a2221fd7",
+      "src_port": "c",
+      "dst": "27417e55",
+      "dst_port": "c"
+    },
+    {
+      "src": "a2221fd7",
+      "src_port": "done",
+      "dst": "27417e55",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "a2221fd7",
+      "src_port": "done",
+      "dst": "0760d78f",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "a2221fd7",
+      "src_port": "summary",
+      "dst": "ca559395",
+      "dst_port": "value"
+    },
+    {
+      "src": "a2221fd7",
+      "src_port": "done",
+      "dst": "ca559395",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "a2221fd7",
+      "src_port": "done",
+      "dst": "99cfc892",
+      "dst_port": "next"
+    }
+  ]
+}

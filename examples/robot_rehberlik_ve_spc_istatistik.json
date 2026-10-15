@@ -1,0 +1,142 @@
+{
+  "format": "visionflow",
+  "version": 1,
+  "nodes": [
+    {
+      "id": "kaynak",
+      "type": "TestPattern",
+      "pos": [0.0, 0.0],
+      "values": {
+        "pattern": "Daireler (Kalibrasyon)",
+        "width": 640,
+        "height": 480
+      }
+    },
+    {
+      "id": "hizala",
+      "type": "FastTemplateAligner",
+      "pos": [280.0, 0.0],
+      "values": {
+        "min_contour_area": 400.0,
+        "target_angle": 0.0,
+        "invert_binary": false
+      }
+    },
+    {
+      "id": "robot",
+      "type": "RobotGuidance",
+      "pos": [580.0, -90.0],
+      "values": {
+        "robot_type": "Universal Robots (URScript)",
+        "scale_mm_per_px": 0.25,
+        "offset_z_mm": 120.0,
+        "origin_x_px": 100.0,
+        "origin_y_px": 200.0
+      }
+    },
+    {
+      "id": "spc",
+      "type": "SPCAnalyzer",
+      "pos": [580.0, 110.0],
+      "values": {
+        "usl": 10.5,
+        "lsl": 9.5,
+        "nominal": 10.0,
+        "subgroup_size": 5,
+        "max_history_samples": 50
+      }
+    },
+    {
+      "id": "onizleme",
+      "type": "Preview",
+      "pos": [880.0, 0.0],
+      "values": {
+        "overlay": ""
+      }
+    }
+  ],
+  "connections": [
+    {
+      "src": "kaynak",
+      "src_port": "image",
+      "dst": "hizala",
+      "dst_port": "image"
+    },
+    {
+      "src": "hizala",
+      "src_port": "offset_x",
+      "dst": "robot",
+      "dst_port": "x_px"
+    },
+    {
+      "src": "hizala",
+      "src_port": "offset_y",
+      "dst": "robot",
+      "dst_port": "y_px"
+    },
+    {
+      "src": "hizala",
+      "src_port": "angle_deg",
+      "dst": "robot",
+      "dst_port": "angle_deg"
+    },
+    {
+      "src": "hizala",
+      "src_port": "found",
+      "dst": "robot",
+      "dst_port": "trigger"
+    },
+    {
+      "src": "hizala",
+      "src_port": "offset_x",
+      "dst": "spc",
+      "dst_port": "measurement"
+    },
+    {
+      "src": "hizala",
+      "src_port": "aligned_image",
+      "dst": "onizleme",
+      "dst_port": "image"
+    }
+  ],
+  "template": {
+    "title": "Robotik Yönlendirme (Pick & Place) + 6-Sigma SPC",
+    "categories": [
+      "PLC",
+      "Ölçüm",
+      "Otomasyon"
+    ],
+    "description": "Bantta rastgele açıyla gelen parçaların merkez ve yönelimini bularak robot alma koordinatları (URScript/KUKA/ABB) üretir; Cpk/Cp 6-Sigma istatistiksel kalite kontrolü yapar.",
+    "questions": [
+      {
+        "id": "kaynak",
+        "label": "Görüntü kaynağı",
+        "kind": "source",
+        "default": "Örnek resimler",
+        "help": "Önce test deseniyle deneyin; sonra kameranızı seçin.",
+        "targets": [
+          {
+            "node": "kaynak"
+          }
+        ]
+      },
+      {
+        "id": "robot_tipi",
+        "label": "Robot Markası & Dili",
+        "kind": "choice",
+        "default": "Universal Robots (URScript)",
+        "choices": [
+          "Universal Robots (URScript)",
+          "Standart TCP Komutu",
+          "Sadece Koordinat"
+        ],
+        "targets": [
+          {
+            "node": "robot",
+            "param": "robot_type"
+          }
+        ]
+      }
+    ]
+  }
+}
