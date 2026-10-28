@@ -1,4 +1,4 @@
-# VisionFlow Studio
+# AutoMove Studio
 
 Kod yazmadan, blokları sürükleyip birbirine bağlayarak **görüntü işleme, yapay zeka ile nesne tespiti ve otomasyon** akışları kurduğunuz masaüstü programı. AugeLab Studio benzeri, ama açık mimarili ve genişletilebilir.
 
